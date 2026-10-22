@@ -24,15 +24,11 @@ téléphonie, accessoires et matériel informatique. Prêt à héberger sur **Ve
 ## 2. Créer la base de données (Neon)
 
 1. Va sur [neon.tech](https://neon.tech), crée un compte et un nouveau projet.
-2. Dans le tableau de bord du projet, l'onglet **Connection Details** propose deux chaînes :
-   - **Pooled connection** (contient `-pooler` dans l'adresse) → utilise-la comme `DATABASE_URL`.
-     C'est celle que le site utilisera en production sur Vercel (indispensable en serverless :
-     évite d'épuiser les connexions à la base quand plusieurs visiteurs arrivent en même temps).
-   - **Direct connection** (sans `-pooler`) → utilise-la comme `DIRECT_URL`. Elle sert uniquement
-     pour créer/modifier les tables (`prisma db push`).
-   - Si ton fournisseur (Neon, Supabase...) ne montre qu'une seule chaîne, mets la même valeur
-     pour `DATABASE_URL` et `DIRECT_URL`.
-3. Garde ces deux chaînes de côté, tu en auras besoin à l'étape suivante.
+2. Dans le tableau de bord du projet, l'onglet **Connection Details** te donne une chaîne de
+   connexion (`postgresql://...`). Copie-la **telle quelle, sans guillemets ni le mot `psql`** :
+   ce sera ta variable `DATABASE_URL`. Si Neon en propose deux (pooled / direct), prends celle
+   **sans** `-pooler` dans l'adresse pour commencer.
+3. Garde cette chaîne de côté, tu en auras besoin à l'étape suivante.
 
 > C'est cette même chaîne de connexion que ton logiciel de caisse utilisera plus tard pour
 > accéder aux mêmes données de stock.
@@ -109,19 +105,18 @@ does not exist"). Utilise plutôt :
    "page does not exist".
 4. **Avant de cliquer "Deploy"**, ouvre **Environment Variables** et ajoute (les mêmes que ton
    `.env` local) :
-   - `DATABASE_URL` (connexion **pooled** Neon)
-   - `DIRECT_URL` (connexion **directe** Neon)
+   - `DATABASE_URL` (la chaîne de connexion Neon, sans guillemets)
    - `ADMIN_EMAIL`, `ADMIN_PASSWORD`, `AUTH_SECRET`
    - `NEXT_PUBLIC_SHOP_NAME`, `NEXT_PUBLIC_SHOP_PHONE`, `NEXT_PUBLIC_SHOP_WHATSAPP`,
      `NEXT_PUBLIC_SHOP_ADDRESS`
    Un déploiement sans `DATABASE_URL` compile mais chaque page plante à l'ouverture.
-5. Clique **Deploy**. Vercel exécute `npm install` (→ `postinstall` génère Prisma), puis
-   `npm run build`.
+5. Clique **Deploy**. Vercel exécute `npm install`, puis
+   `npm run build` (qui génère aussi le client Prisma).
 6. **Vérifie les logs** : Deployments → ton déploiement → **Building** puis **Functions**. Toute
    erreur y est écrite noir sur blanc.
 7. Une fois le déploiement "Ready", ouvre le lien `*.vercel.app` fourni : c'est ton site en ligne,
    avant même de brancher `elitetech.tn`.
-8. Depuis ta machine, avec `DATABASE_URL`/`DIRECT_URL` de `.env` pointant vers cette même base
+8. Depuis ta machine, avec `DATABASE_URL` de `.env` pointant vers cette même base
    Neon, lance la création des tables et le seed :
    ```bash
    npm run db:push
@@ -134,14 +129,14 @@ does not exist"). Utilise plutôt :
 ### Checklist si une page affiche encore "does not exist" ou une erreur
 
 - [ ] **Root Directory** du projet Vercel = dossier contenant `package.json` (pas un sous-dossier)
-- [ ] `DATABASE_URL` et `DIRECT_URL` renseignées dans Environment Variables
+- [ ] `DATABASE_URL` renseignée dans Environment Variables (sans guillemets, commence par `postgresql://`)
 - [ ] `npm run db:push` a bien été exécuté sur cette base (les tables existent)
 - [ ] Le déploiement est marqué **Ready** (pas "Error") dans l'onglet Deployments
 - [ ] Tu testes le lien `*.vercel.app`, pas `elitetech.tn` (le DNS peut ne pas être propagé)
 
 ### Lancer le seed sur la base de production
 
-Depuis ta machine, avec `DATABASE_URL`/`DIRECT_URL` de `.env` pointant vers la base de prod :
+Depuis ta machine, avec `DATABASE_URL` de `.env` pointant vers la base de prod :
 
 ```bash
 npm run db:seed
