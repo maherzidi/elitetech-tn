@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+  <rect width="400" height="400" fill="#F7F8FA"/>
+  <rect x="120" y="130" width="160" height="140" rx="10" fill="#DDE3EC"/>
+  <circle cx="200" cy="200" r="35" fill="#B9C4D6"/>
+  <rect x="160" y="285" width="80" height="10" rx="5" fill="#DDE3EC"/>
+  <text x="200" y="330" font-family="Arial, sans-serif" font-size="16" fill="#9AA6B8" text-anchor="middle">Photo à venir</text>
+</svg>
