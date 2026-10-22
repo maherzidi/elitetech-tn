@@ -1,1 +1,311 @@
+// Schema de base de donnees EliteTech
+// Cette base est concue pour etre PARTAGEE entre :
+//  - ce site e-commerce (elitetech.tn)
+//  - le futur logiciel de caisse (facturation + gestion stock en magasin)
+//
+// Principe : un seul "Product" et un seul niveau de stock (Product.stock),
+// chaque mouvement (vente site, vente caisse, reception fournisseur,
+// ajustement) passe par la table StockMovement avec un champ "source".
+// Le logiciel de caisse pourra se connecter a la meme DATABASE_URL et
+// utiliser directement ces memes tables (ou generer son propre client
+// Prisma/SQL a partir de ce schema).
 
+generator client {
+  provider      = "prisma-client-js"
+  // "native" pour le developpement local, "rhel-openssl-3.0.x" pour les
+  // fonctions serverless de Vercel (environnement Amazon Linux/Lambda).
+  binaryTargets = ["native", "rhel-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ---------- Catalogue ----------
+
+model Category {
+  id        String     @id @default(cuid())
+  name      String
+  nameAr    String?
+  slug      String     @unique
+  image     String?
+  order     Int        @default(0)
+  isActive  Boolean    @default(true)
+
+  parentId  String?
+  parent    Category?  @relation("CategoryToSub", fields: [parentId], references: [id], onDelete: Cascade)
+  children  Category[] @relation("CategoryToSub")
+
+  products  Product[]
+
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  @@index([parentId])
+}
+
+model Brand {
+  id       String    @id @default(cuid())
+  name     String    @unique
+  products Product[]
+}
+
+model Product {
+  id              String   @id @default(cuid())
+  sku             String   @unique   // reference / code-barre, partage avec la caisse
+  barcode         String?  @unique
+  name            String
+  nameAr          String?
+  slug            String   @unique
+  description     String?  @db.Text
+  descriptionAr   String?  @db.Text
+
+  purchasePrice   Decimal  @default(0) @db.Decimal(10, 3) // prix d'achat (utilise par la caisse)
+  price           Decimal  @db.Decimal(10, 3)             // prix de vente TTC affiche sur le site
+  comparePrice    Decimal? @db.Decimal(10, 3)              // ancien prix barre (promo)
+  tvaRate         Decimal  @default(19) @db.Decimal(4, 2)  // taux de TVA en %
+
+  stock           Int      @default(0)      // quantite disponible (partagee site + caisse)
+  lowStockAlert   Int      @default(3)
+
+  images          String[] // urls (placeholders pour l'instant)
+
+  isActive        Boolean  @default(true)
+  isFeatured      Boolean  @default(false)
+
+  sellerCommission Decimal @default(0) @db.Decimal(10, 3) // gain du vendeur (Programme Vendeur) si ce produit est acheté avec un code, en paiement en ligne uniquement
+
+  categoryId      String?
+  category        Category? @relation(fields: [categoryId], references: [id])
+
+  brandId         String?
+  brand           Brand?    @relation(fields: [brandId], references: [id])
+
+  specs           Json?     // caracteristiques techniques libres (cle/valeur)
+
+  orderItems      OrderItem[]
+  stockMovements  StockMovement[]
+  sellerEarnings  SellerEarning[]
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([categoryId])
+  @@index([slug])
+}
+
+// ---------- Stock / inventaire ----------
+
+enum StockMovementType {
+  ENTREE        // reception fournisseur
+  VENTE_SITE    // vente via le site web
+  VENTE_CAISSE  // vente en magasin (caisse)
+  AJUSTEMENT    // correction d'inventaire
+  RETOUR        // retour client
+}
+
+enum StockSource {
+  SITE
+  CAISSE
+  ADMIN
+}
+
+model StockMovement {
+  id         String            @id @default(cuid())
+  productId  String
+  product    Product           @relation(fields: [productId], references: [id])
+  type       StockMovementType
+  quantity   Int               // positif = entree, negatif = sortie
+  source     StockSource
+  note       String?
+  orderId    String?
+  order      Order?            @relation(fields: [orderId], references: [id])
+  createdAt  DateTime          @default(now())
+
+  @@index([productId])
+}
+
+// ---------- Clients / commandes (site) ----------
+
+model Customer {
+  id        String   @id @default(cuid())
+  name      String
+  phone     String
+  email     String?
+  address   String?
+  city      String?
+  orders    Order[]
+  createdAt DateTime @default(now())
+}
+
+enum OrderStatus {
+  EN_ATTENTE
+  CONFIRMEE
+  EN_PREPARATION
+  EXPEDIEE
+  LIVREE
+  ANNULEE
+}
+
+enum PaymentMethod {
+  COD      // paiement a la livraison
+  CARTE    // paiement en ligne (a activer plus tard)
+}
+
+enum PaymentStatus {
+  NON_PAYE
+  PAYE
+  REMBOURSE
+}
+
+model Order {
+  id             String          @id @default(cuid())
+  orderNumber    String          @unique
+
+  customerId     String?
+  customer       Customer?       @relation(fields: [customerId], references: [id])
+
+  customerName   String
+  customerPhone  String
+  customerEmail  String?
+  address        String
+  city           String
+
+  items          OrderItem[]
+  stockMovements StockMovement[]
+
+  sellerId       String?
+  seller         Seller?         @relation(fields: [sellerId], references: [id])
+  sellerCode     String?         // code saisi par le client au moment de la commande
+  sellerEarnings SellerEarning[]
+
+  subtotal       Decimal         @db.Decimal(10, 3)
+  shippingCost   Decimal         @default(7) @db.Decimal(10, 3)
+  total          Decimal         @db.Decimal(10, 3)
+
+  status         OrderStatus     @default(EN_ATTENTE)
+  paymentMethod  PaymentMethod   @default(COD)
+  paymentStatus  PaymentStatus   @default(NON_PAYE)
+
+  notes          String?
+
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+}
+
+model OrderItem {
+  id          String  @id @default(cuid())
+  orderId     String
+  order       Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId   String
+  product     Product @relation(fields: [productId], references: [id])
+  productName String
+  sku         String
+  unitPrice   Decimal @db.Decimal(10, 3)
+  quantity    Int
+  total       Decimal @db.Decimal(10, 3)
+}
+
+// ---------- Administration ----------
+
+enum AdminRole {
+  SUPER_ADMIN
+  GESTIONNAIRE
+}
+
+// ---------- Service Reparation ----------
+// L'admin definit les types de pannes et une fourchette de prix indicative.
+// Le client choisit son appareil + la panne sur /reparation, voit un devis
+// indicatif instantane, puis envoie sa demande (RepairRequest) qui apparait
+// dans l'admin pour suivi.
+
+model RepairIssueType {
+  id       String          @id @default(cuid())
+  name     String          @unique
+  nameAr   String?
+  minPrice Decimal         @db.Decimal(10, 3)
+  maxPrice Decimal         @db.Decimal(10, 3)
+  order    Int             @default(0)
+  isActive Boolean         @default(true)
+  requests RepairRequest[]
+}
+
+enum RepairStatus {
+  NOUVELLE
+  CONTACTE
+  EN_COURS
+  TERMINEE
+  ANNULEE
+}
+
+model RepairRequest {
+  id            String           @id @default(cuid())
+  deviceModel   String
+  issueTypeId   String?
+  issueType     RepairIssueType? @relation(fields: [issueTypeId], references: [id])
+  issueLabel    String           // copie du libelle au moment de la demande
+  estimatedMin  Decimal          @db.Decimal(10, 3)
+  estimatedMax  Decimal          @db.Decimal(10, 3)
+  customerName  String
+  customerPhone String
+  notes         String?
+  status        RepairStatus     @default(NOUVELLE)
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+}
+
+model AdminUser {
+  id           String    @id @default(cuid())
+  email        String    @unique
+  passwordHash String
+  name         String
+  role         AdminRole @default(GESTIONNAIRE)
+  createdAt    DateTime  @default(now())
+}
+
+// ---------- Programme Vendeur ----------
+// N'importe qui peut s'inscrire comme vendeur (statut EN_ATTENTE).
+// L'admin valide (APPROUVE) : un code unique est alors genere.
+// Un client saisit ce code au moment de la commande. Si la commande est
+// payee EN LIGNE (PaymentMethod.CARTE), une SellerEarning est creee pour
+// chaque article achete, avec le montant defini par produit (sellerCommission).
+// En paiement a la livraison (COD), le code est accepte mais ne genere aucun gain.
+
+enum SellerStatus {
+  EN_ATTENTE
+  APPROUVE
+  REFUSE
+  SUSPENDU
+}
+
+model Seller {
+  id           String          @id @default(cuid())
+  name         String
+  phone        String
+  email        String          @unique
+  passwordHash String
+  status       SellerStatus    @default(EN_ATTENTE)
+  code         String?         @unique // genere a l'approbation
+  orders       Order[]
+  earnings     SellerEarning[]
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+}
+
+model SellerEarning {
+  id              String   @id @default(cuid())
+  sellerId        String
+  seller          Seller   @relation(fields: [sellerId], references: [id])
+  orderId         String
+  order           Order    @relation(fields: [orderId], references: [id])
+  productId       String
+  product         Product  @relation(fields: [productId], references: [id])
+  quantity        Int
+  unitCommission  Decimal  @db.Decimal(10, 3)
+  totalCommission Decimal  @db.Decimal(10, 3)
+  createdAt       DateTime @default(now())
+
+  @@index([sellerId])
+  @@index([orderId])
+}
