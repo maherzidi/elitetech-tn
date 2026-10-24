@@ -53,6 +53,7 @@ model Brand {
 
 model Product {
   id              String   @id @default(cuid())
+  externalId      String?  @unique   // identifiant du produit dans l'application de caisse (EliteTech Gestion)
   sku             String   @unique   // reference / code-barre, partage avec la caisse
   barcode         String?  @unique
   name            String
@@ -308,4 +309,13 @@ model SellerEarning {
 
   @@index([sellerId])
   @@index([orderId])
+}
+
+// Journal des evenements de synchronisation recus de la caisse (anti-doublon)
+model SyncEvent {
+  id        String   @id            // identifiant de l'evenement cote caisse (device-N)
+  type      String                 // product | move | sale | repair | del
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
 }
