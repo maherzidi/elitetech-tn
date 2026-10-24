@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import ProductCard, { ProductCardData } from "@/components/ProductCard";
+import HeroShowcase, { ShowcaseItem } from "@/components/HeroShowcase";
 import { useLanguage } from "@/components/LanguageProvider";
 
 type Category = {
@@ -30,9 +31,11 @@ const TRUST_ITEMS = [
 export default function HomeClient({
   categories,
   featured,
+  showcase,
 }: {
   categories: Category[];
   featured: ProductCardData[];
+  showcase: ShowcaseItem[];
 }) {
   const { t, locale } = useLanguage();
 
@@ -68,20 +71,9 @@ export default function HomeClient({
             </div>
           </div>
 
-          {/* Mockup telephone (CSS/SVG, pas d'image) */}
-          <div className="relative hidden justify-self-end md:flex">
-            <div className="relative h-80 w-44 rounded-[2rem] border-4 border-navy-700 bg-gradient-to-b from-navy-800 to-black shadow-2xl">
-              <div className="absolute left-1/2 top-3 h-1.5 w-10 -translate-x-1/2 rounded-full bg-navy-700" />
-              <div className="flex h-full flex-col items-center justify-center gap-1">
-                <span className="font-sora text-lg font-extrabold text-white">ELITE</span>
-                <span className="font-sora text-lg font-extrabold text-accent">TECH</span>
-              </div>
-              <div className="absolute -bottom-8 -right-16 w-44 rounded-lg bg-navy-900/90 p-3 shadow-xl backdrop-blur">
-                <p className="text-xs text-white/60">À partir de</p>
-                <p className="text-lg font-bold text-white">49 DT</p>
-                <p className="text-xs text-white/50">Livraison en Tunisie</p>
-              </div>
-            </div>
+          {/* Diaporama produits */}
+          <div className="flex justify-center md:justify-end">
+            <HeroShowcase items={showcase} />
           </div>
         </div>
       </section>
