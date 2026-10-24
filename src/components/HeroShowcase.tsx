@@ -44,31 +44,33 @@ export default function HeroShowcase({ items }: { items: ShowcaseItem[] }) {
   const inStock = item.stock > 0;
 
   return (
-    <div className="relative w-full max-w-[340px] justify-self-end">
-      <div
-        className="pointer-events-none absolute -inset-8 rounded-[3rem] opacity-40 blur-3xl"
-        style={{ background: "radial-gradient(circle, #F5811F 0%, transparent 70%)" }}
-      />
-
-      <div className="relative overflow-hidden rounded-3xl border border-white/15 bg-white shadow-2xl">
-        <Link href={`/produits/${item.slug}`} className="block" aria-label={item.name}>
-          <div className="flex items-center justify-between px-5 pt-4">
-            <span
-              className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[11px] font-semibold ${
-                inStock ? "bg-emerald-50 text-emerald-700" : "bg-amber/10 text-amber-dark"
-              }`}
-            >
-              <span
-                className={`h-1.5 w-1.5 rounded-full ${inStock ? "bg-emerald-500" : "bg-amber"}`}
-              />
-              {inStock ? "En stock" : "Sur commande"}
-            </span>
-            <span className="text-[11px] font-medium text-ink/35">
-              {index + 1} / {items.length}
-            </span>
-          </div>
-
-          <div className="flex h-60 items-center justify-center px-6 pt-2">
+    <div
+      className="relative w-full"
+      onTouchStart={(event) => {
+        touchX.current = event.touches[0]?.clientX ?? null;
+      }}
+      onTouchEnd={(event) => {
+        if (touchX.current === null) return;
+        const delta = (event.changedTouches[0]?.clientX ?? touchX.current) - touchX.current;
+        if (Math.abs(delta) > 40) go(delta > 0 ? -1 : 1);
+        touchX.current = null;
+      }}
+    >
+      <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-white shadow-2xl">
+        <Link
+          href={`/produits/${item.slug}`}
+          className="grid grid-cols-1 md:grid-cols-[minmax(0,44%)_minmax(0,1fr)]"
+          aria-label={item.name}
+        >
+          {/* Visuel produit */}
+          <div className="relative flex min-h-[230px] items-center justify-center overflow-hidden bg-paper px-8 py-7 md:min-h-[330px] md:px-10">
+            <div
+              className="pointer-events-none absolute inset-0 opacity-70"
+              style={{
+                background:
+                  "radial-gradient(circle at 50% 45%, rgba(245,129,31,0.10), transparent 62%)",
+              }}
+            />
             {item.image ? (
               <img
                 key={item.id}
@@ -76,28 +78,51 @@ export default function HeroShowcase({ items }: { items: ShowcaseItem[] }) {
                 alt={item.name}
                 className={`hero-slide-${
                   direction === "next" ? "next" : "prev"
-                } max-h-full w-auto max-w-full object-contain drop-shadow-[0_18px_24px_rgba(0,0,0,0.16)]`}
+                } relative max-h-[190px] w-auto max-w-full object-contain drop-shadow-[0_20px_28px_rgba(0,0,0,0.18)] md:max-h-[250px]`}
               />
             ) : (
-              <span className="text-6xl">📱</span>
+              <span className="relative text-7xl">📱</span>
             )}
           </div>
 
-          <div className="px-5 pb-5 pt-1">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-ink/40">
-              {item.brand || "EliteTech"}
-            </p>
-            <h3 className="mt-0.5 font-sora text-lg font-bold leading-tight text-navy-900">
-              {item.name}
-            </h3>
-            <div className="mt-3 flex items-end justify-between gap-3">
-              <p className="font-sora text-2xl font-extrabold text-accent">
-                {price} <span className="text-sm font-bold">DT</span>
+          {/* Informations */}
+          <div className="flex flex-col justify-center gap-4 border-t border-black/5 px-6 py-7 md:border-l md:border-t-0 md:px-10 lg:px-14">
+            <div className="flex items-center gap-3">
+              <span
+                className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[11px] font-semibold ${
+                  inStock ? "bg-emerald-50 text-emerald-700" : "bg-amber/10 text-amber-dark"
+                }`}
+              >
+                <span
+                  className={`h-1.5 w-1.5 rounded-full ${inStock ? "bg-emerald-500" : "bg-amber"}`}
+                />
+                {inStock ? "En stock" : "Sur commande"}
+              </span>
+              <span className="text-[11px] font-medium text-ink/35">
+                {index + 1} / {items.length}
+              </span>
+            </div>
+
+            <div>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-ink/40">
+                {item.brand || "EliteTech"}
               </p>
-              <span className="rounded-full bg-navy-950 px-3.5 py-2 text-xs font-semibold text-white">
+              <h3 className="mt-1 font-sora text-2xl font-extrabold leading-tight text-navy-900 md:text-3xl">
+                {item.name}
+              </h3>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-4">
+              <p className="font-sora text-3xl font-extrabold text-accent md:text-4xl">
+                {price} <span className="text-base font-bold">DT</span>
+              </p>
+              <span className="rounded-full bg-navy-950 px-5 py-2.5 text-sm font-semibold text-white">
                 Voir le produit
               </span>
             </div>
+            <p className="text-xs font-medium text-ink/45">
+              Livraison partout en Tunisie · Paiement à la livraison
+            </p>
           </div>
         </Link>
 
@@ -107,7 +132,7 @@ export default function HeroShowcase({ items }: { items: ShowcaseItem[] }) {
               type="button"
               onClick={() => go(-1)}
               aria-label="Produit précédent"
-              className="absolute left-2 top-[42%] z-10 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border border-black/5 bg-white/95 text-lg text-navy-900 shadow-md transition hover:bg-accent hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
+              className="absolute left-3 top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-black/5 bg-white/95 text-xl text-navy-900 shadow-md transition hover:bg-accent hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent md:left-4"
             >
               ‹
             </button>
@@ -115,7 +140,7 @@ export default function HeroShowcase({ items }: { items: ShowcaseItem[] }) {
               type="button"
               onClick={() => go(1)}
               aria-label="Produit suivant"
-              className="absolute right-2 top-[42%] z-10 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border border-black/5 bg-white/95 text-lg text-navy-900 shadow-md transition hover:bg-accent hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
+              className="absolute right-3 top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-black/5 bg-white/95 text-xl text-navy-900 shadow-md transition hover:bg-accent hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent md:right-4"
             >
               ›
             </button>
@@ -124,7 +149,7 @@ export default function HeroShowcase({ items }: { items: ShowcaseItem[] }) {
       </div>
 
       {items.length > 1 && (
-        <div className="mt-4 flex items-center justify-center gap-2">
+        <div className="mt-5 flex items-center justify-center gap-2">
           {items.map((it, i) => (
             <button
               key={it.id}
@@ -135,7 +160,7 @@ export default function HeroShowcase({ items }: { items: ShowcaseItem[] }) {
               }}
               aria-label={`Afficher ${it.name}`}
               className={`h-1.5 rounded-full transition-all ${
-                i === index ? "w-6 bg-accent" : "w-1.5 bg-white/30 hover:bg-white/60"
+                i === index ? "w-7 bg-accent" : "w-1.5 bg-white/30 hover:bg-white/60"
               }`}
             />
           ))}

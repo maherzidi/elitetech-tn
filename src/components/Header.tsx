@@ -15,6 +15,7 @@ export default async function Header() {
     where: { parentId: null, isActive: true },
     orderBy: { order: "asc" },
     include: {
+      _count: { select: { products: true } },
       children: {
         where: { isActive: true },
         orderBy: { order: "asc" },
@@ -22,6 +23,11 @@ export default async function Header() {
       },
     },
   });
+
+  // On n'encombre pas le menu avec les categories fourre-tout vides (ex. "Divers").
+  const navCategories = categories.filter(
+    (category) => category.children.length > 0 || category._count.products > 0
+  );
 
   return (
     <header className="sticky top-0 z-50">
@@ -48,7 +54,7 @@ export default async function Header() {
       {/* Bandeau principal */}
       <div className="bg-navy-900">
         <div className="container-page flex h-16 items-center gap-4">
-          <MobileMenu categories={categories as any} />
+          <MobileMenu categories={navCategories as any} />
 
           <Link href="/" className="flex items-center gap-2 shrink-0">
             <Image
@@ -75,7 +81,7 @@ export default async function Header() {
         </div>
       </div>
 
-      <CategoryNav categories={categories as any} />
+      <CategoryNav categories={navCategories as any} />
     </header>
   );
 }

@@ -44,11 +44,11 @@ export default function HomeClient({
       {/* Hero */}
       <section className="relative overflow-hidden bg-navy-950">
         <div
-          className="pointer-events-none absolute -right-24 top-1/2 h-[420px] w-[420px] -translate-y-1/2 rounded-full opacity-40 blur-3xl"
+          className="pointer-events-none absolute -right-32 -top-24 h-[520px] w-[520px] rounded-full opacity-30 blur-3xl"
           style={{ background: "radial-gradient(circle, #F5811F 0%, transparent 70%)" }}
         />
-        <div className="container-page relative grid grid-cols-1 items-center gap-10 py-14 md:grid-cols-2 md:py-24">
-          <div>
+        <div className="container-page relative py-12 md:py-16">
+          <div className="max-w-3xl">
             <p className="mb-3 inline-block rounded-full bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-amber">
               Nouvelle collection
             </p>
@@ -72,7 +72,7 @@ export default function HomeClient({
           </div>
 
           {/* Diaporama produits */}
-          <div className="flex justify-center md:justify-end">
+          <div className="mt-10 md:mt-12">
             <HeroShowcase items={showcase} />
           </div>
         </div>

@@ -99,6 +99,26 @@ async function resolveCategory(name?: string, sub?: string) {
     all.find((c) => normName(c.name) === key);
   if (match) return prisma.category.findUnique({ where: { id: match.id } });
 
+  // La caisse concatene parfois la categorie et la sous-categorie
+  // ("Téléphonie & TabletteTéléphones") : on rattache au bon parent au lieu
+  // de creer une categorie racine en double.
+  const rootPrefix = all
+    .filter(
+      (c) => c.parentId === null && key.startsWith(normName(c.name)) && key !== normName(c.name)
+    )
+    .sort((a, b) => b.name.length - a.name.length)[0];
+  if (rootPrefix) {
+    const rest = key.slice(normName(rootPrefix.name).length).trim();
+    const child = all.find(
+      (c) =>
+        c.parentId === rootPrefix.id &&
+        rest &&
+        (normName(c.name).includes(rest) || rest.includes(normName(c.name)))
+    );
+    const target = child ?? all.find((c) => c.parentId === rootPrefix.id) ?? rootPrefix;
+    return prisma.category.findUnique({ where: { id: target.id } });
+  }
+
   return prisma.category.create({
     data: { name: catName, slug: await uniqueCategorySlug(slugify(catName)) },
   });
