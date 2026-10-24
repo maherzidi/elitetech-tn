@@ -38,30 +38,74 @@ const slugify = (v: string) =>
     .replace(/^-+|-+$/g, "")
     .slice(0, 70) || "divers";
 
+// Certains noms arrivent de la caisse deja casses ("clÃ© usb"). On les repare.
+function fixMojibake(value: unknown): string {
+  const s = String(value ?? "");
+  if (!/[ÃÂ]/.test(s)) return s;
+  const repaired = Buffer.from(s, "latin1").toString("utf8");
+  return repaired.includes("\uFFFD") ? s : repaired;
+}
+
+const normName = (v: string) =>
+  v
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+
+async function uniqueCategorySlug(base: string) {
+  let candidate = base.slice(0, 70) || "divers";
+  let i = 2;
+  while (await prisma.category.findUnique({ where: { slug: candidate } })) {
+    candidate = `${base.slice(0, 65)}-${i++}`;
+  }
+  return candidate;
+}
+
+// La caisse envoie la sous-categorie dans "cat" (et "sub" est vide).
+// On rattache donc le produit a une categorie existante au lieu d'en recreer une.
 async function resolveCategory(name?: string, sub?: string) {
-  const catName = String(name || "").trim();
+  const catName = fixMojibake(name).trim();
   if (!catName) return null;
 
-  const parentSlug = slugify(catName);
-  const parent = await prisma.category.upsert({
-    where: { slug: parentSlug },
-    update: {},
-    create: { name: catName, slug: parentSlug },
+  const all = await prisma.category.findMany({
+    select: { id: true, name: true, slug: true, parentId: true },
   });
+  const key = normName(catName);
 
-  const subName = String(sub || "").trim();
-  if (!subName) return parent;
+  const subName = fixMojibake(sub).trim();
+  if (subName) {
+    const parent =
+      all.find((c) => c.parentId === null && normName(c.name) === key) ??
+      all.find((c) => normName(c.name) === key);
+    if (parent) {
+      const child = all.find(
+        (c) => c.parentId === parent.id && normName(c.name) === normName(subName)
+      );
+      if (child) return prisma.category.findUnique({ where: { id: child.id } });
+      return prisma.category.create({
+        data: {
+          name: subName,
+          slug: await uniqueCategorySlug(`${parent.slug}-${slugify(subName)}`),
+          parentId: parent.id,
+        },
+      });
+    }
+  }
 
-  const childSlug = `${parentSlug}-${slugify(subName)}`.slice(0, 70);
-  return prisma.category.upsert({
-    where: { slug: childSlug },
-    update: {},
-    create: { name: subName, slug: childSlug, parentId: parent.id },
+  const match =
+    all.find((c) => c.parentId !== null && normName(c.name) === key) ??
+    all.find((c) => normName(c.name) === key);
+  if (match) return prisma.category.findUnique({ where: { id: match.id } });
+
+  return prisma.category.create({
+    data: { name: catName, slug: await uniqueCategorySlug(slugify(catName)) },
   });
 }
 
 async function resolveBrand(name?: string) {
-  const brandName = String(name || "").trim();
+  const brandName = fixMojibake(name).trim();
   if (!brandName) return null;
   return prisma.brand.upsert({
     where: { name: brandName },
@@ -77,7 +121,7 @@ async function findProductByAppId(appId: unknown) {
 async function handleProduct(p: Ev) {
   const externalId = String(p.id);
   const sku = String(p.code || `C-${externalId}`).trim() || `C-${externalId}`;
-  const name = String(p.name || sku).trim();
+  const name = fixMojibake(p.name || "").trim() || sku;
 
   const [category, brand] = await Promise.all([
     resolveCategory(p.cat, p.sub),
