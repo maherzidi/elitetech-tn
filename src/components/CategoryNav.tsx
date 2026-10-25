@@ -13,18 +13,13 @@ type Cat = {
 };
 
 export default function CategoryNav({ categories }: { categories: Cat[] }) {
-  const { locale, t } = useLanguage();
+  const { locale } = useLanguage();
   const [openId, setOpenId] = useState<string | null>(null);
 
   return (
     <nav className="hidden lg:block border-b border-black/5 bg-white">
       <div className="container-page">
-        <ul className="flex items-stretch whitespace-nowrap text-[13px] font-medium">
-          <li className="shrink-0">
-            <Link href="/" className="flex h-10 items-center px-2 text-ink hover:text-accent">
-              {t("home")}
-            </Link>
-          </li>
+        <ul className="flex items-stretch whitespace-nowrap text-[13px] font-bold">
           {categories.map((cat, index) => (
             <li
               key={cat.id}
@@ -40,7 +35,7 @@ export default function CategoryNav({ categories }: { categories: Cat[] }) {
               </Link>
               {openId === cat.id && cat.children.length > 0 && (
                 <div
-                  className={`absolute top-10 z-40 grid w-64 max-w-[80vw] grid-cols-1 gap-1 rounded-b-lg border border-black/5 bg-white p-3 text-left shadow-lg ${
+                  className={`absolute top-10 z-40 grid w-64 max-w-[80vw] grid-cols-1 gap-1 rounded-b-lg border border-black/5 bg-white p-3 text-left font-medium shadow-lg ${
                     index >= categories.length - 3 ? "right-0" : "left-0"
                   }`}
                 >

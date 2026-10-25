@@ -13,12 +13,15 @@ type Category = {
 };
 
 const CATEGORY_ICONS: Record<string, string> = {
-  telephonie: "📱",
   informatique: "💻",
-  "accessoires-informatique": "🖱️",
-  gaming: "🎮",
-  "maison-electromenager": "🏠",
-  "reseau-securite": "🛜",
+  "telephonie-tablette": "📱",
+  impression: "🖨️",
+  stockage: "💾",
+  "tv-son-photos": "📺",
+  electromenager: "🏠",
+  bureautique: "🖊️",
+  "reseau-securite": "📡",
+  services: "🛠️",
 };
 
 const TRUST_ITEMS = [
@@ -41,40 +44,10 @@ export default function HomeClient({
 
   return (
     <div>
-      {/* Hero */}
-      <section className="relative overflow-hidden bg-navy-950">
-        <div
-          className="pointer-events-none absolute -right-32 -top-24 h-[520px] w-[520px] rounded-full opacity-30 blur-3xl"
-          style={{ background: "radial-gradient(circle, #F5811F 0%, transparent 70%)" }}
-        />
-        <div className="container-page relative py-12 md:py-16">
-          <div className="max-w-3xl">
-            <p className="mb-3 inline-block rounded-full bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-amber">
-              Nouvelle collection
-            </p>
-            <h1 className="font-sora text-3xl font-extrabold leading-tight text-white sm:text-4xl md:text-5xl">
-              La technologie
-              <br />
-              <span className="text-accent">à votre portée.</span>
-            </h1>
-            <p className="mt-4 max-w-md text-white/70">
-              Smartphones, accessoires, informatique, composants électroniques et réparation. Une sélection moderne
-              pour particuliers et professionnels.
-            </p>
-            <div className="mt-6 flex flex-wrap gap-3">
-              <Link href="/categories/telephonie" className="btn-primary">
-                Acheter maintenant
-              </Link>
-              <Link href="/reparation" className="btn-outline-light">
-                Demander un devis
-              </Link>
-            </div>
-          </div>
-
-          {/* Diaporama produits */}
-          <div className="mt-10 md:mt-12">
-            <HeroShowcase items={showcase} />
-          </div>
+      {/* Banniere produits */}
+      <section className="bg-paper pt-5 md:pt-7">
+        <div className="container-page">
+          <HeroShowcase items={showcase} />
         </div>
       </section>
 

@@ -61,5 +61,11 @@ export default async function HomePage() {
     ];
   });
 
-  return <HomeClient categories={categories} featured={serializedFeatured} showcase={showcase} />;
+  return (
+    <HomeClient
+      categories={categories.filter((category) => category.slug !== "divers")}
+      featured={serializedFeatured}
+      showcase={showcase}
+    />
+  );
 }
