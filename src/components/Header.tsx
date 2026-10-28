@@ -11,23 +11,41 @@ const SHOP_PHONE = process.env.NEXT_PUBLIC_SHOP_PHONE || "+21652322608";
 const SHOP_WHATSAPP = process.env.NEXT_PUBLIC_SHOP_WHATSAPP || "21652322608";
 
 export default async function Header() {
-  const categories = await prisma.category.findMany({
-    where: { parentId: null, isActive: true },
-    orderBy: { order: "asc" },
-    include: {
-      _count: { select: { products: true } },
-      children: {
-        where: { isActive: true },
-        orderBy: { order: "asc" },
-        select: { id: true, name: true, nameAr: true, slug: true },
+  const [categories, activeCounts] = await Promise.all([
+    prisma.category.findMany({
+      where: { parentId: null, isActive: true },
+      orderBy: { order: "asc" },
+      include: {
+        children: {
+          where: { isActive: true },
+          orderBy: { order: "asc" },
+          select: { id: true, name: true, nameAr: true, slug: true },
+        },
       },
-    },
-  });
+    }),
+    prisma.product.groupBy({
+      by: ["categoryId"],
+      where: { isActive: true },
+      _count: { _all: true },
+    }),
+  ]);
 
-  // On n'encombre pas le menu avec les categories fourre-tout vides (ex. "Divers").
-  const navCategories = categories.filter(
-    (category) => category.children.length > 0 || category._count.products > 0
+  const countByCategory = new Map(
+    activeCounts.map((row) => [row.categoryId, row._count._all]),
   );
+
+  // On n'encombre pas le menu avec les rayons vides : seules les categories
+  // qui contiennent des produits en stock sont proposees.
+  const navCategories = categories
+    .map((category) => ({
+      ...category,
+      children: category.children.filter((child) => countByCategory.get(child.id)),
+    }))
+    .filter(
+      (category) =>
+        category.slug !== "divers" &&
+        (category.children.length > 0 || countByCategory.get(category.id)),
+    );
 
   return (
     <header className="sticky top-0 z-50">

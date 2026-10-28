@@ -16,13 +16,24 @@ export default async function CategoryPage({ params }: { params: { slug: string 
 
   const childIds = category.children.map((c) => c.id);
 
-  const products = await prisma.product.findMany({
-    where: {
-      isActive: true,
-      OR: [{ categoryId: category.id }, { categoryId: { in: childIds } }],
-    },
-    orderBy: { createdAt: "desc" },
-  });
+  const [products, childCounts] = await Promise.all([
+    prisma.product.findMany({
+      where: {
+        isActive: true,
+        OR: [{ categoryId: category.id }, { categoryId: { in: childIds } }],
+      },
+      orderBy: { createdAt: "desc" },
+    }),
+    prisma.product.groupBy({
+      by: ["categoryId"],
+      where: { isActive: true, categoryId: { in: childIds } },
+      _count: { _all: true },
+    }),
+  ]);
+
+  const countByCategory = new Map(
+    childCounts.map((row) => [row.categoryId, row._count._all]),
+  );
 
   const serialized = products.map((p) => ({
     id: p.id,
@@ -41,12 +52,14 @@ export default async function CategoryPage({ params }: { params: { slug: string 
       title={category.name}
       titleAr={category.nameAr}
       breadcrumbs={[{ label: category.name, labelAr: category.nameAr }]}
-      subcategories={category.children.map((c) => ({
-        name: c.name,
-        nameAr: c.nameAr,
-        slug: c.slug,
-        href: `/categories/${category.slug}/${c.slug}`,
-      }))}
+      subcategories={category.children
+        .filter((c) => countByCategory.get(c.id))
+        .map((c) => ({
+          name: c.name,
+          nameAr: c.nameAr,
+          slug: c.slug,
+          href: `/categories/${category.slug}/${c.slug}`,
+        }))}
       products={serialized}
     />
   );

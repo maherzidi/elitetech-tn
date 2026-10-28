@@ -43,6 +43,52 @@ export default function ProductDetailClient({
   const images = product.images.length > 0 ? product.images : ["/images/placeholder-product.svg"];
   const inStock = product.stock > 0;
 
+  // Les specs sont stockées en JSON : on impose un ordre de lecture logique
+  // (écran, puce, mémoire, photo, batterie...) plutôt que l'ordre alphabétique.
+  const SPEC_ORDER = [
+    "Écran",
+    "Processeur",
+    "RAM",
+    "Stockage",
+    "Caméras",
+    "Caméra",
+    "Batterie",
+    "Autonomie",
+    "Charge",
+    "Puissance",
+    "Norme",
+    "Port",
+    "Connecteurs",
+    "Longueur",
+    "Courant",
+    "Bluetooth",
+    "Portée",
+    "Format",
+    "Microphone",
+    "Lecture",
+    "Éclairage",
+    "Étanchéité",
+    "Résistance",
+    "Réseau",
+    "SIM",
+    "Connectivité",
+    "Système",
+    "Compatibilité",
+    "Certification",
+    "Modèle",
+    "Type",
+    "Fonctions",
+    "Poids",
+    "Épaisseur",
+    "Couleur",
+  ];
+  const specEntries = Object.entries(product.specs || {}).sort(([a], [b]) => {
+    const ia = SPEC_ORDER.indexOf(a);
+    const ib = SPEC_ORDER.indexOf(b);
+    if (ia !== -1 || ib !== -1) return (ia === -1 ? 999 : ia) - (ib === -1 ? 999 : ib);
+    return a.localeCompare(b, "fr");
+  });
+
   return (
     <div className="container-page py-8">
       <nav className="mb-4 flex flex-wrap gap-1 text-sm text-ink/50">
@@ -66,8 +112,8 @@ export default function ProductDetailClient({
       <div className="grid grid-cols-1 gap-10 lg:grid-cols-2">
         {/* Gallery */}
         <div>
-          <div className="relative mb-3 aspect-square overflow-hidden rounded-lg border border-black/5 bg-paper">
-            <Image src={images[activeImage]} alt={displayName} fill className="object-contain p-8" />
+          <div className="relative mb-3 aspect-square overflow-hidden rounded-lg border border-black/5 bg-[radial-gradient(circle_at_50%_40%,#ffffff,#e9e9e5)]">
+            <Image src={images[activeImage]} alt={displayName} fill className="object-contain p-8 drop-shadow-[0_16px_28px_rgba(15,23,42,0.14)]" />
           </div>
           {images.length > 1 && (
             <div className="flex gap-2">
@@ -110,7 +156,7 @@ export default function ProductDetailClient({
               <h2 className="mb-2 font-semibold text-ink">Caractéristiques</h2>
               <table className="w-full text-sm">
                 <tbody>
-                  {Object.entries(product.specs).map(([k, v]) => (
+                  {specEntries.map(([k, v]) => (
                     <tr key={k} className="border-b border-black/5">
                       <td className="py-1.5 pr-4 font-medium text-ink/60">{k}</td>
                       <td className="py-1.5 text-ink">{String(v)}</td>

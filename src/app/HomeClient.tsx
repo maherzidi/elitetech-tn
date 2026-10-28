@@ -73,12 +73,12 @@ export default function HomeClient({
         <div className="mb-6 flex items-center justify-between">
           <h2 className="font-sora text-2xl font-bold text-navy-900">{t("our_categories")}</h2>
         </div>
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
+        <div className="flex flex-wrap justify-center gap-4">
           {categories.map((cat) => (
             <Link
               key={cat.id}
               href={`/categories/${cat.slug}`}
-              className="card flex flex-col items-center gap-2 p-5 text-center transition-shadow hover:shadow-md"
+              className="card flex w-36 flex-col items-center gap-2 p-5 text-center transition-shadow hover:shadow-md sm:w-44"
             >
               <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-accent/10 text-2xl">
                 {CATEGORY_ICONS[cat.slug] || "🔌"}
@@ -96,8 +96,8 @@ export default function HomeClient({
         <section className="container-page py-12">
           <div className="mb-6 flex items-center justify-between">
             <h2 className="font-sora text-2xl font-bold text-navy-900">{t("featured_products")}</h2>
-            <Link href="/promotions" className="text-sm font-semibold text-accent hover:underline">
-              Promotions →
+            <Link href="/produits" className="text-sm font-semibold text-accent hover:underline">
+              Tout voir →
             </Link>
           </div>
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
@@ -119,16 +119,17 @@ export default function HomeClient({
               <span className="text-accent">la différence.</span>
             </h2>
             <p className="mt-3 max-w-sm text-white/60">
-              Catalogue prêt à être synchronisé avec vos dépôts, votre stock réel et vos prix.
+              Smartphones, téléphones, audio et accessoires : le stock réel de la boutique
+              EliteTech à Hammamet, livré partout en Tunisie.
             </p>
-            <Link href="/promotions" className="btn-primary mt-5 inline-flex">
-              Découvrir les offres
+            <Link href="/produits" className="btn-primary mt-5 inline-flex">
+              Voir tous les produits
             </Link>
           </div>
           <div className="flex h-40 w-40 shrink-0 items-center justify-center rounded-full border-4 border-accent/30 bg-accent text-center text-white shadow-xl">
             <div>
-              <p className="text-3xl font-extrabold">-20%</p>
-              <p className="text-xs">sélection</p>
+              <p className="text-3xl font-extrabold">24-48h</p>
+              <p className="text-xs">livraison</p>
             </div>
           </div>
         </div>
