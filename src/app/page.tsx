@@ -7,6 +7,7 @@ export const dynamic = "force-dynamic";
 // L'ordre de ce tableau est l'ordre d'affichage.
 const SHOWCASE: { sku: string; label: string; image: string }[] = [
   { sku: "20000010", label: "HONOR X5C 4/128", image: "/images/products/honor-x5c.png" },
+  { sku: "C-1793261256793", label: "HONOR X6C 6/256", image: "/images/products/honor-x6c.png" },
   { sku: "20000011", label: "Redmi 15C 6/128", image: "/images/products/redmi-15c.png" },
   { sku: "20000012", label: "Redmi A7 Pro 4/128", image: "/images/products/redmi-a7-pro.png" },
   { sku: "20000013", label: "Infinix Smart 20 4/128", image: "/images/products/infinix-smart-20.png" },

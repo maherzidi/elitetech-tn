@@ -1,12 +1,14 @@
 /**
- * Remplace le catalogue de démonstration par les 20 produits réellement en
+ * Remplace le catalogue de démonstration par les produits réellement en
  * stock dans la caisse EliteTech (base-de-donnees/elitetech.json).
  *
  * - Les anciens produits sont désactivés (jamais supprimés : ils sont
  *   référencés par l'historique des commandes).
- * - Les 14 produits qui partagent déjà un SKU 2000000x sont mis à jour.
- * - Les 6 accessoires sans code reçoivent le SKU "C-<id>" comme le fait
+ * - Les produits qui partagent déjà un SKU 2000000x sont mis à jour.
+ * - Les produits sans code caisse reçoivent le SKU "C-<id>" comme le fait
  *   /api/sync.
+ * - Les catégories "Smartphone" et "Téléphone Portable" reproduisent le
+ *   classement de la caisse.
  * - Les événements de l'outbox de la caisse sont marqués comme traités pour
  *   éviter un double comptage du stock.
  *
@@ -34,6 +36,7 @@ const CAT = {
   accessoires: "cmvmnrwc500046d19be6zmypx", // Informatique > accessoires & périphériques
   telephone: "cmvmgjwes016u2hcupv4wu123", // Téléphonie & Tablette > Téléphone Portable
   chargeur: "cmvmnt76a00086d19eb6tjqot", // Téléphonie & Tablette > Chargeur
+  smartphone: "", // Téléphonie & Tablette > Smartphone (créé au démarrage)
 };
 
 const catalog = {
@@ -220,6 +223,7 @@ const catalog = {
     name: "Redmi 15C 6/128",
     categoryId: CAT.telephone,
     image: "redmi-15c.png",
+    images: ["redmi-15c.png", "redmi-15c-lineup.png"],
     description:
       "Le Redmi 15C offre un très grand écran de 6,9 pouces à 120 Hz, idéal pour le streaming et les jeux. Il est animé par un MediaTek Helio G81 Ultra épaulé par 6 Go de RAM et 128 Go de stockage, avec un capteur principal de 50 MP. Sa batterie de 6000 mAh accepte la charge rapide 33 W et le téléphone est certifié IP64.",
     specs: {
@@ -241,6 +245,7 @@ const catalog = {
     name: "Redmi A7 Pro 4/128",
     categoryId: CAT.telephone,
     image: "redmi-a7-pro.png",
+    images: ["redmi-a7-pro.png", "redmi-a7-pro-lineup.png"],
     description:
       "Le Redmi A7 Pro est un smartphone d'entrée de gamme généreux, avec un écran 6,9 pouces à 120 Hz et une batterie de 6000 mAh. Le Unisoc T7250, 4 Go de RAM et 128 Go de stockage suffisent pour les usages essentiels, tandis que le capteur 13 MP capture les moments du quotidien. Double SIM, HyperOS et charge 15 W.",
     specs: {
@@ -301,7 +306,7 @@ const catalog = {
   },
 };
 
-// Accessoires sans code caisse : SKU C-<id>.
+// Produits sans code caisse : SKU C-<id>.
 const ACCESSOIRES = {
   "1793176645320": {
     slug: "chargeur-samsung-25w-blanc",
@@ -396,13 +401,231 @@ const ACCESSOIRES = {
       Couleur: "Blanc",
     },
   },
+  "1793261256793": {
+    slug: "smartphone-honor-x6c-6-256",
+    name: "HONOR X6C 6/256",
+    brand: "Honor",
+    image: "honor-x6c.png",
+    images: ["honor-x6c.png", "honor-x6c-noir.png"],
+    description:
+      "Le HONOR X6c 6/256 associe un grand écran 6,61 pouces à 120 Hz, un capteur principal de 50 MP et une batterie de 5300 mAh avec charge rapide 35 W. Le MediaTek Helio G81 Ultra, 6 Go de RAM et 256 Go de stockage assurent une expérience fluide au quotidien, le tout dans un châssis fin et résistant. MagicOS 9 sous Android 15, double SIM et connectivité 4G.",
+    specs: {
+      Écran: "6,61 pouces HD+ 120 Hz",
+      Processeur: "MediaTek Helio G81 Ultra",
+      RAM: "6 Go",
+      Stockage: "256 Go (extensible microSD)",
+      Caméras: "50 MP arrière / 5 MP avant",
+      Batterie: "5300 mAh",
+      Charge: "35 W",
+      Système: "Android 15, MagicOS 9",
+      Réseau: "4G, double SIM",
+      Couleur: "Vert menthe / noir",
+    },
+  },
+  "1793262002761": {
+    slug: "cable-charge-inkax-x01",
+    name: "Câble de charge Inkax X01",
+    brand: "INKAX",
+    image: "inkax-x01.png",
+    description:
+      "Câble de charge Inkax X01 en PVC souple, long de 0,9 m et prévu pour un courant de 3,1 A. La série X01 couvre les connecteurs Lightning, micro USB et USB-C : elle recharge rapidement le smartphone au quotidien et assure aussi le transfert de données. Connecteurs moulés et gaine résistante aux pliures.",
+    specs: {
+      Connecteurs: "USB-A vers Lightning / micro USB / USB-C",
+      Longueur: "0,9 m",
+      Courant: "3,1 A",
+      Matériau: "PVC",
+      Fonction: "Charge et données",
+      Couleur: "Blanc",
+      Modèle: "X01",
+    },
+  },
+  "1793262054825": {
+    slug: "cable-charge-inkax-cb-33",
+    name: "Câble de charge Inkax CB-33",
+    brand: "INKAX",
+    image: "inkax-cb33.png",
+    description:
+      "Le câble Inkax CB-33 réunit trois connecteurs en un seul câble : USB-A d'un côté, puis Type-C, micro USB et Lightning de l'autre. Long de 1 m et traversé par un courant de 2,1 A, il permet de recharger presque tous les smartphones avec un seul accessoire. Gaine TPE douce au toucher, boîtier ABS et finition « pebble » résistante.",
+    specs: {
+      Connecteurs: "USB-A vers Type-C / micro USB / Lightning",
+      Longueur: "1 m",
+      Courant: "2,1 A",
+      Matériau: "TPE, boîtier ABS",
+      Fonction: "Charge et données",
+      Couleur: "Blanc",
+      Modèle: "CB-33",
+    },
+  },
+  "1793262094881": {
+    slug: "cable-charge-inkax-cb-07",
+    name: "Câble de charge Inkax CB-07",
+    brand: "INKAX",
+    image: "inkax-cb07.png",
+    description:
+      "Câble USB-A vers Lightning Inkax CB-07 de 1 m, conçu pour la recharge rapide des iPhone et iPad. Il supporte jusqu'à 3,1 A et offre une finition TPE souple et résistante, avec des connecteurs moulés par injection qui tiennent dans le temps. Idéal pour la maison, la voiture ou le bureau.",
+    specs: {
+      Connecteurs: "USB-A vers Lightning",
+      Longueur: "1 m",
+      Courant: "3,1 A",
+      Matériau: "TPE (injection)",
+      Compatibilité: "iPhone, iPad",
+      Couleur: "Blanc",
+      Modèle: "CB-07",
+    },
+  },
+  "1793262187553": {
+    slug: "chargeur-inkax-y03-qc20w-type-c",
+    name: "Chargeur complet Inkax Y-03 QC 20W Type-C",
+    brand: "INKAX",
+    image: "inkax-y03.png",
+    description:
+      "Chargeur secteur Inkax Y-03 de 20 W avec port USB-A et technologie Quick Charge 3.0, livré complet avec son câble USB-A vers USB-C. Il recharge rapidement smartphones et tablettes compatibles tout en régulant la puissance pour protéger la batterie. Format compact, prise européenne et finition blanche.",
+    specs: {
+      Puissance: "20 W",
+      Norme: "Quick Charge 3.0",
+      Port: "USB-A",
+      Câble: "USB-A vers USB-C inclus",
+      Prise: "Européenne (EU)",
+      Couleur: "Blanc",
+      Modèle: "Y03",
+    },
+  },
+  "1793262224513": {
+    slug: "chargeur-inkax-y03-qc20w-micro-usb",
+    name: "Chargeur complet Inkax Y-03 QC 20W Micro USB",
+    brand: "INKAX",
+    image: "inkax-y03.png",
+    description:
+      "Chargeur secteur Inkax Y-03 de 20 W avec port USB-A et Quick Charge 3.0, fourni avec son câble USB-A vers micro USB. Il assure une recharge rapide des téléphones et accessoires micro USB, avec protection contre les surcharges et les surchauffes. Format compact, prise européenne et finition blanche.",
+    specs: {
+      Puissance: "20 W",
+      Norme: "Quick Charge 3.0",
+      Port: "USB-A",
+      Câble: "USB-A vers micro USB inclus",
+      Prise: "Européenne (EU)",
+      Couleur: "Blanc",
+      Modèle: "Y03",
+    },
+  },
+  "1793262309385": {
+    slug: "cable-micro-usb-vdenmenv-2-4a",
+    name: "Câble micro USB Vdenmenv 2,4 A",
+    brand: "Vdenmenv",
+    image: "vdenmenv-micro-usb.png",
+    description:
+      "Câble micro USB Vdenmenv de 1 m, prévu pour un courant de 2,4 A et la synchronisation des données. Ses connecteurs renforcés et sa gaine PVC résistante en font un câble fiable pour recharger un téléphone Android, une batterie externe ou tout accessoire micro USB au quotidien.",
+    specs: {
+      Connecteurs: "USB-A vers micro USB",
+      Longueur: "1 m",
+      Courant: "2,4 A",
+      Matériau: "PVC",
+      Fonction: "Charge et données",
+      Couleur: "Blanc",
+      Modèle: "D01V",
+    },
+  },
+  "1793262467298": {
+    slug: "clavier-yatel-k11",
+    name: "Clavier Yatel K11",
+    brand: "YATEL",
+    image: "yatel-k11.png",
+    description:
+      "Clavier filaire Yatel K11 au format complet, avec pavé numérique et touches souples pour une frappe confortable au bureau comme à la maison. Il se branche en USB et fonctionne immédiatement, sans pilote à installer. Sa structure renforcée résiste à un usage quotidien intensif.",
+    specs: {
+      Connexion: "USB filaire",
+      Format: "Complet avec pavé numérique",
+      Touches: "104 touches",
+      Disposition: "AZERTY",
+      Couleur: "Noir",
+      Compatibilité: "Windows, macOS, Linux",
+    },
+  },
+  "1793262560018": {
+    slug: "clavier-r8-1801",
+    name: "Clavier R8 1801",
+    brand: "R8",
+    image: "r8-1801.png",
+    description:
+      "Clavier filaire R8 1801 au format complet, avec pavé numérique et touches gravées bilingues arabe / anglais. Son câble de 1,3 m laisse de la liberté sur le bureau et le branchement USB fonctionne en plug-and-play, sans installation. Boîtier ABS robuste et frappe silencieuse pour le bureau, l'école ou la maison.",
+    specs: {
+      Connexion: "USB 2.0 filaire",
+      Longueur: "Câble 1,3 m",
+      Format: "Complet avec pavé numérique",
+      Disposition: "Bilingue arabe / anglais",
+      Dimensions: "440 x 138 x 25 mm",
+      Matériau: "ABS",
+      Couleur: "Noir",
+    },
+  },
+  "1793262608937": {
+    slug: "clavier-redragon-bk-7092",
+    name: "Clavier Redragon BK-7092",
+    brand: "Redragon",
+    image: "redragon-bk7092.png",
+    description:
+      "Clavier filaire Redragon BK-7092 au format complet, pensé pour le bureau et la saisie prolongée. Ses touches membrane silencieuses, ses 14 raccourcis FN et sa conception ergonomique offrent une frappe confortable et précise. La fonction anti-ghosting évite les touches manquées, même en frappe rapide. Branchement USB plug-and-play.",
+    specs: {
+      Connexion: "USB filaire",
+      Format: "Complet 104 touches",
+      Raccourcis: "14 touches FN",
+      Technologie: "Membrane silencieuse",
+      "Anti-ghosting": "Oui",
+      Dimensions: "44,3 x 14,5 x 2,5 cm",
+      Poids: "482 g",
+      Couleur: "Noir",
+    },
+  },
 };
+
+const normalize = (value) =>
+  String(value || "")
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
 
 async function main() {
   const finalExternalIds = new Set(stock.products.map((p) => String(p.id)));
   const finalSkus = new Set(stock.products.map((p) => p.code || `C-${p.id}`));
 
   // 1. Categories et marques.
+  // La caisse distingue desormais "Smartphone" et "Telephone portable" :
+  // on reproduit cette arborescence sur le site.
+  const telephonie = await prisma.category.findUnique({ where: { slug: "telephonie-tablette" } });
+  if (telephonie) {
+    let smartphone = await prisma.category.findFirst({
+      where: {
+        OR: [
+          { slug: "telephonie-tablette-smartphone" },
+          { parentId: telephonie.id, name: { equals: "Smartphone", mode: "insensitive" } },
+        ],
+      },
+    });
+    if (!smartphone) {
+      smartphone = await prisma.category.create({
+        data: {
+          name: "Smartphone",
+          slug: "telephonie-tablette-smartphone",
+          parentId: telephonie.id,
+          order: 0,
+        },
+      });
+    }
+    CAT.smartphone = smartphone.id;
+
+    // Smartphone, Telephone Portable, Chargeur : ordre d'affichage du menu.
+    const orderUpdates = [
+      [CAT.smartphone, 0],
+      [CAT.telephone, 1],
+      [CAT.chargeur, 2],
+    ];
+    for (const [id, order] of orderUpdates) {
+      if (id) await prisma.category.update({ where: { id }, data: { order } });
+    }
+    console.log("Categories telephone: Smartphone / Telephone Portable / Chargeur");
+  }
+
   const brands = new Map();
   const brandName = (p) => (ACCESSOIRES[String(p.id)]?.brand || p.brand || "").trim();
   for (const p of stock.products) {
@@ -432,15 +655,42 @@ async function main() {
   }
   console.log(`Desactives: ${toDisable.length} anciens produits`);
 
-  // 3. Mise a jour / creation des 20 produits.
+  // 3. Mise a jour / creation des produits du stock.
   let created = 0;
   let updated = 0;
   for (const p of stock.products) {
     const externalId = String(p.id);
     const sku = (p.code || `C-${externalId}`).trim();
     const extra = ACCESSOIRES[externalId];
-    const meta = catalog[sku] || extra;
-    if (!meta) throw new Error(`Pas de fiche produit pour ${sku} (${p.name})`);
+    let meta = catalog[sku] || extra;
+    if (!meta) {
+      // La caisse peut ajouter un article avant qu'on ait redige sa fiche :
+      // on cree une fiche minimale pour ne pas bloquer la synchronisation.
+      const cleanName = String(p.name || sku).trim();
+      const baseSlug =
+        normalize(cleanName)
+          .replace(/[^a-z0-9]+/g, "-")
+          .replace(/^-+|-+$/g, "")
+          .slice(0, 60) || "produit";
+      meta = {
+        slug: `${baseSlug}-${externalId}`,
+        name: cleanName,
+        image: null,
+        description: `${cleanName} disponible chez EliteTech. Fiche descriptive en cours de mise à jour.`,
+        specs: {},
+      };
+      console.warn(`FICHE GENERIQUE ${sku} ${cleanName}`);
+    }
+
+    const sub = normalize(p.sub);
+    const categoryId =
+      sub === "smartphone"
+        ? CAT.smartphone
+        : sub === "telephone portable"
+          ? CAT.telephone
+          : sub === "chargeur"
+            ? CAT.chargeur
+            : CAT.accessoires;
 
     const data = {
       externalId,
@@ -452,14 +702,14 @@ async function main() {
       purchasePrice: p.buy,
       stock: p.qty,
       lowStockAlert: p.min || 2,
-      categoryId: extra ? CAT.chargeur : meta.categoryId,
+      categoryId,
       brandId: brands.get(brandName(p)) || null,
-      images: [`${IMG}${meta.image}`],
+      images: meta.image
+        ? (meta.images || [meta.image]).map((file) => `${IMG}${file}`)
+        : ["/images/placeholder-product.svg"],
       specs: meta.specs,
       isActive: true,
-      isFeatured: Boolean(
-        sku.startsWith("2000001") || ["20000001", "20000002", "20000003"].includes(sku)
-      ),
+      isFeatured: sub === "smartphone",
     };
 
     const existing = await prisma.product.findFirst({
