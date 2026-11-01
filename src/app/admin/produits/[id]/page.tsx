@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import ProductForm from "@/components/admin/ProductForm";
 import { updateProduct } from "../../actions";
+import { productColors } from "@/lib/product-variants";
 
 export const dynamic = "force-dynamic";
 
@@ -34,6 +35,7 @@ export default async function EditProductPage({ params }: { params: { id: string
           isFeatured: product.isFeatured,
           isActive: product.isActive,
           sellerCommission: Number(product.sellerCommission),
+          colors: productColors(product.specs),
         }}
       />
     </div>

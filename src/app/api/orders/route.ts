@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { generateOrderNumber } from "@/lib/format";
+import { resolveProductColor } from "@/lib/product-variants";
 
 const SHIPPING_COST = 7;
 
@@ -20,6 +21,7 @@ const OrderSchema = z.object({
       z.object({
         productId: z.string(),
         quantity: z.number().int().min(1),
+        color: z.string().trim().max(40).optional().nullable(),
       })
     )
     .min(1),
@@ -29,7 +31,7 @@ export async function POST(req: NextRequest) {
   try {
     const body = OrderSchema.parse(await req.json());
 
-    const productIds = body.items.map((i) => i.productId);
+    const productIds = [...new Set(body.items.map((i) => i.productId))];
     const products = await prisma.product.findMany({ where: { id: { in: productIds } } });
 
     if (products.length !== productIds.length) {
@@ -38,7 +40,27 @@ export async function POST(req: NextRequest) {
 
     for (const item of body.items) {
       const product = products.find((p) => p.id === item.productId)!;
-      if (product.stock < item.quantity) {
+      if (item.color && !resolveProductColor(product.specs, item.color)) {
+        return NextResponse.json(
+          { error: `Le coloris choisi pour "${product.name}" n'est plus disponible.` },
+          { status: 400 }
+        );
+      }
+    }
+
+    // Un même produit peut être commandé en plusieurs coloris : le stock est
+    // vérifié sur la quantité totale, pas ligne par ligne.
+    const quantityByProduct = new Map<string, number>();
+    for (const item of body.items) {
+      quantityByProduct.set(
+        item.productId,
+        (quantityByProduct.get(item.productId) ?? 0) + item.quantity
+      );
+    }
+
+    for (const [productId, quantity] of quantityByProduct) {
+      const product = products.find((p) => p.id === productId)!;
+      if (product.stock < quantity) {
         return NextResponse.json(
           { error: `Stock insuffisant pour "${product.name}" (${product.stock} disponible(s)).` },
           { status: 400 }
@@ -94,9 +116,10 @@ export async function POST(req: NextRequest) {
           items: {
             create: body.items.map((item) => {
               const product = products.find((p) => p.id === item.productId)!;
+              const color = resolveProductColor(product.specs, item.color);
               return {
                 productId: product.id,
-                productName: product.name,
+                productName: color ? `${product.name} (${color})` : product.name,
                 sku: product.sku,
                 unitPrice: product.price,
                 quantity: item.quantity,

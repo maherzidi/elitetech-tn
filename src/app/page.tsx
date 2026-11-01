@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import HomeClient from "./HomeClient";
+import { productColors } from "@/lib/product-variants";
 
 export const dynamic = "force-dynamic";
 
@@ -15,16 +16,7 @@ const SHOWCASE: { sku: string; label: string; image: string }[] = [
 ];
 
 export default async function HomePage() {
-  const [categories, activeCounts, featured, showcaseProducts] = await Promise.all([
-    prisma.category.findMany({
-      where: { parentId: null, isActive: true },
-      orderBy: { order: "asc" },
-    }),
-    prisma.product.groupBy({
-      by: ["categoryId"],
-      where: { isActive: true },
-      _count: { _all: true },
-    }),
+  const [featured, showcaseProducts] = await Promise.all([
     prisma.product.findMany({
       where: { isActive: true, isFeatured: true },
       orderBy: { createdAt: "desc" },
@@ -46,6 +38,7 @@ export default async function HomePage() {
     comparePrice: p.comparePrice ? Number(p.comparePrice) : null,
     stock: p.stock,
     images: p.images,
+    colors: productColors(p.specs),
   }));
 
   const bySku = new Map(showcaseProducts.map((p) => [p.sku, p]));
@@ -66,28 +59,5 @@ export default async function HomePage() {
     ];
   });
 
-  // On n'affiche que les rayons qui contiennent réellement des produits en
-  // stock : le catalogue ne vit plus que par la caisse.
-  const countByCategory = new Map(
-    activeCounts.map((row) => [row.categoryId, row._count._all]),
-  );
-  const childrenByParent = await prisma.category.findMany({
-    where: { parentId: { in: categories.map((category) => category.id) }, isActive: true },
-    select: { id: true, parentId: true },
-  });
-  const visibleCategories = categories.filter((category) => {
-    if (category.slug === "divers") return false;
-    if (countByCategory.get(category.id)) return true;
-    return childrenByParent.some(
-      (child) => child.parentId === category.id && countByCategory.get(child.id),
-    );
-  });
-
-  return (
-    <HomeClient
-      categories={visibleCategories}
-      featured={serializedFeatured}
-      showcase={showcase}
-    />
-  );
+  return <HomeClient featured={serializedFeatured} showcase={showcase} />;
 }

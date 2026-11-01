@@ -6,6 +6,7 @@ import { useState } from "react";
 import { useCart } from "@/components/CartProvider";
 import { useLanguage } from "@/components/LanguageProvider";
 import { formatPrice } from "@/lib/format";
+import { colorHex, productColors } from "@/lib/product-variants";
 import ProductCard, { ProductCardData } from "@/components/ProductCard";
 
 type ProductDetail = {
@@ -37,11 +38,27 @@ export default function ProductDetailClient({
   const { t, locale } = useLanguage();
   const [qty, setQty] = useState(1);
   const [activeImage, setActiveImage] = useState(0);
+  const [pickedColor, setPickedColor] = useState<string | null>(null);
 
   const displayName = locale === "ar" && product.nameAr ? product.nameAr : product.name;
   const displayDesc = locale === "ar" && product.descriptionAr ? product.descriptionAr : product.description;
   const images = product.images.length > 0 ? product.images : ["/images/placeholder-product.svg"];
   const inStock = product.stock > 0;
+
+  const colors = productColors(product.specs);
+  // Un seul coloris : il est sélectionné d'office. Plusieurs coloris : le
+  // client doit faire un choix explicite avant d'ajouter au panier.
+  const selectedColor =
+    pickedColor && colors.includes(pickedColor)
+      ? pickedColor
+      : colors.length === 1
+        ? colors[0]
+        : null;
+  const needsColorChoice = colors.length > 1;
+  const colorLabel = locale === "ar" ? "اللون" : "Couleur";
+  const chooseColorLabel = locale === "ar" ? "اختر لونك" : "Choisissez votre coloris";
+  const colorRequiredLabel =
+    locale === "ar" ? "اختر اللون للمتابعة" : "Sélectionnez un coloris pour continuer";
 
   // Les specs sont stockées en JSON : on impose un ordre de lecture logique
   // (écran, puce, mémoire, photo, batterie...) plutôt que l'ordre alphabétique.
@@ -82,7 +99,9 @@ export default function ProductDetailClient({
     "Épaisseur",
     "Couleur",
   ];
-  const specEntries = Object.entries(product.specs || {}).sort(([a], [b]) => {
+  const specEntries = Object.entries(product.specs || {})
+    .filter(([key]) => key !== "Couleurs" && key !== "couleurs")
+    .sort(([a], [b]) => {
     const ia = SPEC_ORDER.indexOf(a);
     const ib = SPEC_ORDER.indexOf(b);
     if (ia !== -1 || ib !== -1) return (ia === -1 ? 999 : ia) - (ib === -1 ? 999 : ib);
@@ -167,6 +186,49 @@ export default function ProductDetailClient({
             </div>
           )}
 
+          {colors.length > 0 && (
+            <div className="mt-6">
+              <div className="mb-2 flex flex-wrap items-baseline gap-x-2">
+                <h2 className="font-semibold text-ink">{colorLabel}</h2>
+                {selectedColor && <span className="text-sm text-ink/50">{selectedColor}</span>}
+              </div>
+              <div className="flex flex-wrap gap-2" role="radiogroup" aria-label={chooseColorLabel}>
+                {colors.map((color) => {
+                  const active = selectedColor === color;
+                  return (
+                    <button
+                      key={color}
+                      type="button"
+                      role="radio"
+                      aria-checked={active}
+                      onClick={() => setPickedColor(color)}
+                      className={`flex items-center gap-2 rounded-md border px-3 py-2 text-sm font-medium transition-colors ${
+                        active
+                          ? "border-accent bg-accent/5 text-ink"
+                          : "border-black/10 bg-white text-ink/70 hover:border-accent/60"
+                      }`}
+                    >
+                      <span
+                        className="h-4 w-4 rounded-full border border-black/15 shadow-inner"
+                        style={{ backgroundColor: colorHex(color) }}
+                        aria-hidden="true"
+                      />
+                      {color}
+                      {active && (
+                        <span className="text-accent" aria-hidden="true">
+                          ✓
+                        </span>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+              {needsColorChoice && !selectedColor && (
+                <p className="mt-1.5 text-xs text-ink/50">{colorRequiredLabel}</p>
+              )}
+            </div>
+          )}
+
           <div className="mt-6 flex items-center gap-4">
             <div className="flex items-center rounded-md border border-black/10">
               <button
@@ -186,7 +248,7 @@ export default function ProductDetailClient({
               </button>
             </div>
             <button
-              disabled={!inStock}
+              disabled={!inStock || (colors.length > 0 && !selectedColor)}
               onClick={() =>
                 addItem(
                   {
@@ -197,6 +259,7 @@ export default function ProductDetailClient({
                     price: product.price,
                     image: images[0],
                     stock: product.stock,
+                    color: selectedColor,
                   },
                   qty
                 )

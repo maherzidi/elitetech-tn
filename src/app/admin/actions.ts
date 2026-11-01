@@ -23,6 +23,33 @@ function slugify(text: string) {
     .replace(/(^-|-$)+/g, "");
 }
 
+function parseColors(formData: FormData): string[] {
+  const raw = String(formData.get("colors") || "");
+  const seen = new Set<string>();
+  const colors: string[] = [];
+  for (const part of raw.split(/[,;|]/)) {
+    const value = part.replace(/\s+/g, " ").trim();
+    if (!value) continue;
+    const color = value.charAt(0).toUpperCase() + value.slice(1);
+    const key = color.toLocaleLowerCase("fr");
+    if (seen.has(key)) continue;
+    seen.add(key);
+    colors.push(color);
+  }
+  return colors;
+}
+
+function mergeColorSpecs(existing: unknown, colors: string[]): Record<string, unknown> {
+  const specs =
+    existing && typeof existing === "object" && !Array.isArray(existing)
+      ? { ...(existing as Record<string, unknown>) }
+      : {};
+  delete specs.Couleurs;
+  delete specs.couleurs;
+  if (colors.length > 0) specs.Couleurs = colors.join(", ");
+  return specs;
+}
+
 // ---------- Produits ----------
 
 export async function createProduct(formData: FormData) {
@@ -39,6 +66,7 @@ export async function createProduct(formData: FormData) {
   const categoryId = String(formData.get("categoryId") || "") || null;
   const isFeatured = formData.get("isFeatured") === "on";
   const sellerCommission = parseFloat(String(formData.get("sellerCommission") || "0"));
+  const colors = parseColors(formData);
 
   await prisma.product.create({
     data: {
@@ -55,6 +83,7 @@ export async function createProduct(formData: FormData) {
       isFeatured,
       sellerCommission,
       images: ["/images/placeholder-product.svg"],
+      specs: colors.length > 0 ? { Couleurs: colors.join(", ") } : undefined,
     },
   });
 
@@ -77,6 +106,13 @@ export async function updateProduct(productId: string, formData: FormData) {
   const isFeatured = formData.get("isFeatured") === "on";
   const isActive = formData.get("isActive") === "on";
   const sellerCommission = parseFloat(String(formData.get("sellerCommission") || "0"));
+  const colors = parseColors(formData);
+
+  const existing = await prisma.product.findUnique({
+    where: { id: productId },
+    select: { specs: true },
+  });
+  if (!existing) redirect("/admin/produits");
 
   await prisma.product.update({
     where: { id: productId },
@@ -93,6 +129,7 @@ export async function updateProduct(productId: string, formData: FormData) {
       isFeatured,
       isActive,
       sellerCommission,
+      specs: mergeColorSpecs(existing.specs, colors) as any,
     },
   });
 

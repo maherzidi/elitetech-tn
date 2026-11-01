@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useCart } from "@/components/CartProvider";
+import { useCart, cartItemKey } from "@/components/CartProvider";
 import { useLanguage } from "@/components/LanguageProvider";
 import { formatPrice } from "@/lib/format";
 
@@ -10,7 +10,8 @@ const SHIPPING_COST = 7;
 
 export default function CartPage() {
   const { items, updateQuantity, removeItem, subtotal } = useCart();
-  const { t } = useLanguage();
+  const { t, locale } = useLanguage();
+  const colorLabel = locale === "ar" ? "اللون" : "Couleur";
 
   if (items.length === 0) {
     return (
@@ -31,7 +32,7 @@ export default function CartPage() {
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
         <div className="lg:col-span-2 space-y-3">
           {items.map((item) => (
-            <div key={item.productId} className="card flex items-center gap-4 p-3">
+            <div key={cartItemKey(item)} className="card flex items-center gap-4 p-3">
               <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded bg-paper">
                 <Image src={item.image || "/images/placeholder-product.svg"} alt={item.name} fill className="object-contain p-2" />
               </div>
@@ -39,25 +40,30 @@ export default function CartPage() {
                 <Link href={`/produits/${item.slug}`} className="line-clamp-2 text-sm font-medium text-ink hover:text-accent">
                   {item.name}
                 </Link>
+                {item.color && (
+                  <p className="mt-0.5 text-xs text-ink/50">
+                    {colorLabel} : <span className="font-medium text-ink/70">{item.color}</span>
+                  </p>
+                )}
                 <p className="mt-1 text-sm font-bold text-navy-900">{formatPrice(item.price)}</p>
               </div>
               <div className="flex items-center rounded-md border border-black/10">
                 <button
-                  onClick={() => updateQuantity(item.productId, item.quantity - 1)}
+                  onClick={() => updateQuantity(cartItemKey(item), item.quantity - 1)}
                   className="px-2.5 py-1.5 text-ink hover:text-accent"
                 >
                   −
                 </button>
                 <span className="w-8 text-center text-sm">{item.quantity}</span>
                 <button
-                  onClick={() => updateQuantity(item.productId, item.quantity + 1)}
+                  onClick={() => updateQuantity(cartItemKey(item), item.quantity + 1)}
                   className="px-2.5 py-1.5 text-ink hover:text-accent"
                 >
                   +
                 </button>
               </div>
               <button
-                onClick={() => removeItem(item.productId)}
+                onClick={() => removeItem(cartItemKey(item))}
                 aria-label="Retirer"
                 className="p-2 text-ink/40 hover:text-red-500"
               >

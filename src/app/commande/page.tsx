@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { useCart } from "@/components/CartProvider";
+import { useCart, cartItemKey } from "@/components/CartProvider";
 import { useLanguage } from "@/components/LanguageProvider";
 import { formatPrice } from "@/lib/format";
 
@@ -10,8 +10,9 @@ const SHIPPING_COST = 7;
 
 export default function CheckoutPage() {
   const { items, subtotal, clearCart } = useCart();
-  const { t } = useLanguage();
+  const { t, locale } = useLanguage();
   const router = useRouter();
+  const colorLabel = locale === "ar" ? "اللون" : "Couleur";
 
   const [form, setForm] = useState({
     name: "",
@@ -51,7 +52,11 @@ export default function CheckoutPage() {
             notes: form.notes,
           },
           sellerCode: form.sellerCode || undefined,
-          items: items.map((i) => ({ productId: i.productId, quantity: i.quantity })),
+          items: items.map((i) => ({
+            productId: i.productId,
+            quantity: i.quantity,
+            color: i.color ?? undefined,
+          })),
         }),
       });
       const data = await res.json();
@@ -131,9 +136,16 @@ export default function CheckoutPage() {
           <h2 className="mb-4 font-semibold text-ink">Résumé</h2>
           <ul className="mb-4 space-y-2 text-sm">
             {items.map((i) => (
-              <li key={i.productId} className="flex justify-between gap-2">
+              <li key={cartItemKey(i)} className="flex justify-between gap-2">
                 <span className="text-ink/70">
-                  {i.name} × {i.quantity}
+                  {i.name}
+                  {i.color && (
+                    <span className="text-ink/45">
+                      {" "}
+                      · {colorLabel} {i.color}
+                    </span>
+                  )}{" "}
+                  × {i.quantity}
                 </span>
                 <span className="font-medium">{formatPrice(i.price * i.quantity)}</span>
               </li>

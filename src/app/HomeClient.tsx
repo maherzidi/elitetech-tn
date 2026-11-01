@@ -5,42 +5,14 @@ import ProductCard, { ProductCardData } from "@/components/ProductCard";
 import HeroShowcase, { ShowcaseItem } from "@/components/HeroShowcase";
 import { useLanguage } from "@/components/LanguageProvider";
 
-type Category = {
-  id: string;
-  name: string;
-  nameAr: string | null;
-  slug: string;
-};
-
-const CATEGORY_ICONS: Record<string, string> = {
-  informatique: "💻",
-  "telephonie-tablette": "📱",
-  impression: "🖨️",
-  stockage: "💾",
-  "tv-son-photos": "📺",
-  electromenager: "🏠",
-  bureautique: "🖊️",
-  "reseau-securite": "📡",
-  services: "🛠️",
-};
-
-const TRUST_ITEMS = [
-  { icon: "🚚", title: "Livraison rapide", text: "Partout en Tunisie" },
-  { icon: "💳", title: "Paiement", text: "À la livraison" },
-  { icon: "🛡️", title: "Garantie", text: "Produits sélectionnés" },
-  { icon: "🔧", title: "Réparation", text: "Diagnostic & devis" },
-];
-
 export default function HomeClient({
-  categories,
   featured,
   showcase,
 }: {
-  categories: Category[];
   featured: ProductCardData[];
   showcase: ShowcaseItem[];
 }) {
-  const { t, locale } = useLanguage();
+  const { t } = useLanguage();
 
   return (
     <div>
@@ -48,46 +20,6 @@ export default function HomeClient({
       <section className="bg-paper pt-5 md:pt-7">
         <div className="container-page">
           <HeroShowcase items={showcase} />
-        </div>
-      </section>
-
-      {/* Trust bar */}
-      <section className="border-b border-black/5 bg-white py-8">
-        <div className="container-page grid grid-cols-2 gap-6 sm:grid-cols-4">
-          {TRUST_ITEMS.map((item) => (
-            <div key={item.title} className="flex items-center gap-3">
-              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-accent/10 text-xl">
-                {item.icon}
-              </span>
-              <div>
-                <p className="text-sm font-semibold text-ink">{item.title}</p>
-                <p className="text-xs text-ink/50">{item.text}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* Categories */}
-      <section className="container-page py-12">
-        <div className="mb-6 flex items-center justify-between">
-          <h2 className="font-sora text-2xl font-bold text-navy-900">{t("our_categories")}</h2>
-        </div>
-        <div className="flex flex-wrap justify-center gap-4">
-          {categories.map((cat) => (
-            <Link
-              key={cat.id}
-              href={`/categories/${cat.slug}`}
-              className="card flex w-36 flex-col items-center gap-2 p-5 text-center transition-shadow hover:shadow-md sm:w-44"
-            >
-              <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-accent/10 text-2xl">
-                {CATEGORY_ICONS[cat.slug] || "🔌"}
-              </span>
-              <span className="text-sm font-medium text-ink">
-                {locale === "ar" && cat.nameAr ? cat.nameAr : cat.name}
-              </span>
-            </Link>
-          ))}
         </div>
       </section>
 

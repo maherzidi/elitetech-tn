@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import ProductGrid from "@/components/ProductGrid";
+import { toCatalogProduct } from "@/lib/catalog";
 
 export const dynamic = "force-dynamic";
 
@@ -22,6 +23,10 @@ export default async function CategoryPage({ params }: { params: { slug: string 
         isActive: true,
         OR: [{ categoryId: category.id }, { categoryId: { in: childIds } }],
       },
+      include: {
+        brand: true,
+        category: { include: { parent: true } },
+      },
       orderBy: { createdAt: "desc" },
     }),
     prisma.product.groupBy({
@@ -34,18 +39,6 @@ export default async function CategoryPage({ params }: { params: { slug: string 
   const countByCategory = new Map(
     childCounts.map((row) => [row.categoryId, row._count._all]),
   );
-
-  const serialized = products.map((p) => ({
-    id: p.id,
-    name: p.name,
-    nameAr: p.nameAr,
-    slug: p.slug,
-    sku: p.sku,
-    price: Number(p.price),
-    comparePrice: p.comparePrice ? Number(p.comparePrice) : null,
-    stock: p.stock,
-    images: p.images,
-  }));
 
   return (
     <ProductGrid
@@ -60,7 +53,7 @@ export default async function CategoryPage({ params }: { params: { slug: string 
           slug: c.slug,
           href: `/categories/${category.slug}/${c.slug}`,
         }))}
-      products={serialized}
+      products={products.map(toCatalogProduct)}
     />
   );
 }

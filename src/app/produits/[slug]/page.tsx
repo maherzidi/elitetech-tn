@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import ProductDetailClient from "./ProductDetailClient";
+import { productColors } from "@/lib/product-variants";
 
 export const dynamic = "force-dynamic";
 
@@ -52,6 +53,7 @@ export default async function ProductPage({ params }: { params: { slug: string }
         comparePrice: r.comparePrice ? Number(r.comparePrice) : null,
         stock: r.stock,
         images: r.images,
+        colors: productColors(r.specs),
       }))}
     />
   );

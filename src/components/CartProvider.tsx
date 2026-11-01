@@ -11,13 +11,14 @@ export type CartItem = {
   image: string | null;
   quantity: number;
   stock: number;
+  color: string | null;
 };
 
 type CartContextType = {
   items: CartItem[];
-  addItem: (item: Omit<CartItem, "quantity">, qty?: number) => void;
-  removeItem: (productId: string) => void;
-  updateQuantity: (productId: string, qty: number) => void;
+  addItem: (item: Omit<CartItem, "quantity" | "color"> & { color?: string | null }, qty?: number) => void;
+  removeItem: (key: string) => void;
+  updateQuantity: (key: string, qty: number) => void;
   clearCart: () => void;
   subtotal: number;
   count: number;
@@ -26,6 +27,11 @@ type CartContextType = {
 const CartContext = createContext<CartContextType | null>(null);
 const STORAGE_KEY = "elitetech_cart";
 
+/** Identifie une ligne de panier : un même produit peut avoir plusieurs coloris. */
+export function cartItemKey(item: Pick<CartItem, "productId" | "color">): string {
+  return `${item.productId}::${item.color ?? ""}`;
+}
+
 export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
   const [loaded, setLoaded] = useState(false);
@@ -33,7 +39,13 @@ export function CartProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     try {
       const raw = window.localStorage.getItem(STORAGE_KEY);
-      if (raw) setItems(JSON.parse(raw));
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed)) {
+          // Les paniers enregistrés avant l'ajout des coloris n'ont pas le champ.
+          setItems(parsed.map((item) => ({ ...item, color: item.color ?? null })));
+        }
+      }
     } catch {
       // ignore
     }
@@ -46,24 +58,36 @@ export function CartProvider({ children }: { children: ReactNode }) {
     }
   }, [items, loaded]);
 
-  function addItem(item: Omit<CartItem, "quantity">, qty = 1) {
+  function addItem(
+    item: Omit<CartItem, "quantity" | "color"> & { color?: string | null },
+    qty = 1,
+  ) {
+    const nextItem: CartItem = { ...item, color: item.color?.trim() || null, quantity: 0 };
+    const key = cartItemKey(nextItem);
+
     setItems((prev) => {
-      const existing = prev.find((i) => i.productId === item.productId);
+      const existing = prev.find((entry) => cartItemKey(entry) === key);
       if (existing) {
         const newQty = Math.min(existing.quantity + qty, existing.stock || 99);
-        return prev.map((i) => (i.productId === item.productId ? { ...i, quantity: newQty } : i));
+        return prev.map((entry) =>
+          cartItemKey(entry) === key ? { ...entry, quantity: newQty } : entry,
+        );
       }
-      return [...prev, { ...item, quantity: Math.min(qty, item.stock || 99) }];
+      return [...prev, { ...nextItem, quantity: Math.min(qty, nextItem.stock || 99) }];
     });
   }
 
-  function removeItem(productId: string) {
-    setItems((prev) => prev.filter((i) => i.productId !== productId));
+  function removeItem(key: string) {
+    setItems((prev) => prev.filter((entry) => cartItemKey(entry) !== key));
   }
 
-  function updateQuantity(productId: string, qty: number) {
+  function updateQuantity(key: string, qty: number) {
     setItems((prev) =>
-      prev.map((i) => (i.productId === productId ? { ...i, quantity: Math.max(1, Math.min(qty, i.stock || 99)) } : i))
+      prev.map((entry) =>
+        cartItemKey(entry) === key
+          ? { ...entry, quantity: Math.max(1, Math.min(qty, entry.stock || 99)) }
+          : entry,
+      ),
     );
   }
 
@@ -71,8 +95,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
     setItems([]);
   }
 
-  const subtotal = items.reduce((sum, i) => sum + i.price * i.quantity, 0);
-  const count = items.reduce((sum, i) => sum + i.quantity, 0);
+  const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const count = items.reduce((sum, item) => sum + item.quantity, 0);
 
   return (
     <CartContext.Provider value={{ items, addItem, removeItem, updateQuantity, clearCart, subtotal, count }}>

@@ -16,6 +16,7 @@ export type ProductCardData = {
   comparePrice?: number | null;
   stock: number;
   images: string[];
+  colors?: string[];
 };
 
 export default function ProductCard({ product }: { product: ProductCardData }) {
@@ -24,6 +25,7 @@ export default function ProductCard({ product }: { product: ProductCardData }) {
   const image = product.images?.[0] || "/images/placeholder-product.svg";
   const displayName = locale === "ar" && product.nameAr ? product.nameAr : product.name;
   const inStock = product.stock > 0;
+  const needsColorChoice = (product.colors?.length ?? 0) > 1;
 
   return (
     <div className="card group flex flex-col overflow-hidden transition-shadow hover:shadow-md">
@@ -48,23 +50,30 @@ export default function ProductCard({ product }: { product: ProductCardData }) {
         <span className={`text-xs font-medium ${inStock ? "text-green-600" : "text-red-500"}`}>
           {inStock ? t("in_stock") : t("out_of_stock")}
         </span>
-        <button
-          disabled={!inStock}
-          onClick={() =>
-            addItem({
-              productId: product.id,
-              name: product.name,
-              slug: product.slug,
-              sku: product.sku,
-              price: product.price,
-              image,
-              stock: product.stock,
-            })
-          }
-          className="btn-dark mt-1 w-full disabled:bg-ink/20"
-        >
-          {t("add_to_cart")}
-        </button>
+        {needsColorChoice ? (
+          <Link href={`/produits/${product.slug}`} className="btn-dark mt-1 w-full">
+            {locale === "ar" ? "اختر اللون" : "Choisir la couleur"}
+          </Link>
+        ) : (
+          <button
+            disabled={!inStock}
+            onClick={() =>
+              addItem({
+                productId: product.id,
+                name: product.name,
+                slug: product.slug,
+                sku: product.sku,
+                price: product.price,
+                image,
+                stock: product.stock,
+                color: product.colors?.[0] ?? null,
+              })
+            }
+            className="btn-dark mt-1 w-full disabled:bg-ink/20"
+          >
+            {t("add_to_cart")}
+          </button>
+        )}
       </div>
     </div>
   );

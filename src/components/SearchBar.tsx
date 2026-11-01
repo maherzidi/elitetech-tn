@@ -1,13 +1,20 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useLanguage } from "./LanguageProvider";
 
 export default function SearchBar() {
   const router = useRouter();
   const { t } = useLanguage();
   const [q, setQ] = useState("");
+
+  // Conserve le mot-cle affiche apres une recherche (le champ est dans le
+  // header, il est remonte a chaque navigation).
+  useEffect(() => {
+    const current = new URLSearchParams(window.location.search).get("q");
+    if (current) setQ(current);
+  }, []);
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -22,6 +29,7 @@ export default function SearchBar() {
         type="search"
         value={q}
         onChange={(e) => setQ(e.target.value)}
+        aria-label={t("search_placeholder")}
         placeholder={t("search_placeholder")}
         className="w-full rounded-md border-0 py-2.5 pl-4 pr-11 text-sm text-ink placeholder:text-ink/40 focus:outline-none focus:ring-2 focus:ring-amber"
       />
