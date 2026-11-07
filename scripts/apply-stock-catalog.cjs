@@ -45,6 +45,16 @@ const catalog = {
     name: "Enceinte Bluetooth P Pro5",
     categoryId: CAT.accessoires,
     image: "p-pro5.png",
+    images: [
+      "p-pro5.png",
+      "p-pro5-lineup.webp",
+      "p-pro5-bleu.webp",
+      "p-pro5-rouge.webp",
+      "p-pro5-noir-action.webp",
+      "p-pro5-bleu-action.webp",
+      "p-pro5-camouflage-action.webp",
+      "p-pro5-rouge-action.webp",
+    ],
     description:
       "Enceinte Bluetooth portable au format cylindrique, pensée pour accompagner la musique à la maison comme en déplacement. Elle diffuse un son puissant avec basses renforcées, se connecte en Bluetooth 5.1 jusqu'à 10 mètres et résiste aux éclaboussures grâce à sa certification IPX6. Lecture depuis une carte microSD ou une clé USB, radio FM et éclairage LED intégré.",
     specs: {
@@ -56,22 +66,27 @@ const catalog = {
       Lecture: "MicroSD, USB, radio FM",
       Éclairage: "LED intégré",
       Couleur: "Noir",
+      Couleurs: "Noir, Bleu, Camouflage, Rouge",
     },
   },
   "20000002": {
     slug: "enceinte-bluetooth-romis",
-    name: "Enceinte Bluetooth ROMIS",
+    name: "Enceinte Bluetooth ROMIS RM-S213 LED",
     categoryId: CAT.accessoires,
-    image: "romis-speaker.png",
+    image: "romis-rm-s213-noir.webp",
+    images: ["romis-rm-s213-noir.webp", "romis-rm-s213-lineup.webp"],
     description:
-      "Enceinte Bluetooth ROMIS RM-S616 au design compact et élégant, idéale pour les petits espaces. Elle délivre un son stéréo de 2 x 5 W avec une batterie de 1200 mAh pour plusieurs heures d'écoute. Compatible Bluetooth, carte TF, clé USB et radio FM, avec microphone intégré pour les appels.",
+      "Enceinte Bluetooth ROMIS RM-S213 LED au format cylindrique, avec anneau lumineux RGB sur le dessus. Elle délivre 10 W de puissance, se connecte en Bluetooth et accepte une carte TF, une clé USB ou une entrée AUX. Radio FM, microphone intégré et batterie de 1200 mAh pour environ 3 heures d'écoute.",
     specs: {
-      Modèle: "ROMIS RM-S616",
-      Puissance: "2 x 5 W",
+      Modèle: "ROMIS RM-S213 LED",
+      Puissance: "10 W",
       Batterie: "1200 mAh",
-      Connexion: "Bluetooth",
+      Autonomie: "Environ 3 heures",
+      Connexion: "Bluetooth, USB, AUX",
       Lecture: "Carte TF, USB, radio FM",
+      Éclairage: "LED RGB",
       Microphone: "Intégré",
+      Dimensions: "95 x 140 mm",
       Couleur: "Noir",
     },
   },
@@ -79,7 +94,8 @@ const catalog = {
     slug: "enceinte-bluetooth-zqs1430",
     name: "Enceinte Bluetooth ZQS1430",
     categoryId: CAT.accessoires,
-    image: "zqs-1430.png",
+    image: "zqs-1430-noir.webp",
+    images: ["zqs-1430-noir.webp", "zqs-1430.png"],
     description:
       "Enceinte Bluetooth ZQS-1430 avec éclairage RGB multicolore et microphone, parfaite pour les soirées et le karaoké. Ses deux haut-parleurs de 5 W offrent un son ample, avec une autonomie de 2 à 3 heures grâce à sa batterie de 1200 mAh. Lecture Bluetooth 5.0, USB, carte TF et radio FM.",
     specs: {
@@ -116,6 +132,7 @@ const catalog = {
     name: "Casque Bluetooth P47M",
     categoryId: CAT.accessoires,
     image: "casque-p47m.png",
+    images: ["casque-p47m.png", "casque-p47m-bleu.webp"],
     description:
       "Casque Bluetooth P47M avec oreilles de chat lumineuses RGB, un look fun et un son généreux. Il se connecte en Bluetooth, intègre un microphone pour les appels et se replie pour être transporté facilement. Éclairage LED, lecture carte TF et radio FM.",
     specs: {
@@ -133,6 +150,7 @@ const catalog = {
     name: "Smartec Prime",
     categoryId: CAT.telephone,
     image: "smartec-prime.png",
+    images: ["smartec-prime.png", "smartec-prime-noir.webp"],
     description:
       "Téléphone portable Smartec Prime, simple et robuste, conçu pour les appels et les messages du quotidien. Son clavier physique confortable, son écran couleur et sa batterie longue durée en font un excellent téléphone d'appoint ou pour les seniors. Double SIM, radio FM, lampe torche et Bluetooth.",
     specs: {
@@ -143,6 +161,7 @@ const catalog = {
       Fonctions: "Radio FM, lampe torche, Bluetooth",
       Stockage: "MicroSD",
       Couleur: "Noir / bleu",
+      Couleurs: "Noir, Bleu",
     },
   },
   "20000007": {
@@ -150,6 +169,11 @@ const catalog = {
     name: "itel it2165",
     categoryId: CAT.telephone,
     image: "itel-it2165.png",
+    images: [
+      "itel-it2165.png",
+      "itel-it2165-noir-avant.webp",
+      "itel-it2165-noir-arriere.webp",
+    ],
     description:
       "Téléphone portable itel it2165 au format compact, avec clavier physique et écran couleur 1,77 pouce. Il embarque une batterie de 1000 mAh offrant jusqu'à 9,5 h de communication, la radio FM sans fil, une lampe torche puissante et un emplacement microSD. Double SIM et Bluetooth pour rester connecté simplement.",
     specs: {
@@ -161,6 +185,7 @@ const catalog = {
       Fonctions: "FM sans fil, lampe torche, Bluetooth",
       Stockage: "MicroSD jusqu'à 32 Go",
       Couleur: "Bleu",
+      Couleurs: "Noir, Bleu",
     },
   },
   "20000008": {
@@ -168,6 +193,12 @@ const catalog = {
     name: "LP Starlight M06",
     categoryId: CAT.telephone,
     image: "lp-starlight-m06.png",
+    images: [
+      "lp-starlight-m06.png",
+      "lp-starlight-noir.webp",
+      "lp-starlight-bleu.webp",
+      "lp-starlight-argent.webp",
+    ],
     description:
       "Téléphone portable LP Starlight M06, un mobile compact et économique pour les appels quotidiens. Écran 1,77 pouce, double SIM, radio FM, lampe torche et batterie de 800 mAh : l'essentiel pour téléphoner toute la journée. Emplacement microSD pour stocker contacts et musiques.",
     specs: {
@@ -179,6 +210,7 @@ const catalog = {
       SIM: "Double SIM",
       Fonctions: "Radio FM, lampe torche, Bluetooth",
       Couleur: "Bleu",
+      Couleurs: "Noir, Bleu, Argent",
     },
   },
   "20000009": {
@@ -200,22 +232,31 @@ const catalog = {
   },
   "20000010": {
     slug: "smartphone-honor-x5c-4-128",
-    name: "HONOR X5C 4/128",
+    name: "HONOR X5c Plus 4/128",
     categoryId: CAT.telephone,
-    image: "honor-x5c.png",
+    image: "honor-x5c-plus-cyan-avant-arriere.webp",
+    images: [
+      "honor-x5c-plus-cyan-avant-arriere.webp",
+      "honor-x5c-plus-cyan-arriere.webp",
+      "honor-x5c-plus-cyan-profil.webp",
+      "honor-x5c-plus-noir-avant-arriere.webp",
+      "honor-x5c-plus-noir-arriere.webp",
+      "honor-x5c-plus-noir-profil.webp",
+    ],
     description:
-      "Le HONOR X5c est un smartphone accessible qui mise sur l'autonomie et la fluidité. Son grand écran HD+ de 6,74 pouces à 90 Hz est agréable pour les vidéos et la navigation, tandis que le MediaTek Helio G81, 4 Go de RAM et 128 Go de stockage assurent le quotidien. Capteur photo 13 MP, batterie 5260 mAh et MagicOS 9 sous Android 15.",
+      "Le HONOR X5c Plus est un smartphone accessible qui mise sur l'autonomie et la fluidité. Son grand écran HD+ de 6,74 pouces à 90 Hz est agréable pour les vidéos et la navigation, tandis que le MediaTek Helio G81, 4 Go de RAM et 128 Go de stockage assurent le quotidien. Capteur photo 50 MP, batterie 5260 mAh, charge 15 W et MagicOS 9 sous Android 15. Disponible en Bleu cyan et en Noir.",
     specs: {
       Écran: "6,74 pouces HD+ 90 Hz",
       Processeur: "MediaTek Helio G81",
       RAM: "4 Go",
       Stockage: "128 Go (extensible microSD)",
-      Caméras: "13 MP arrière / 5 MP avant",
+      Caméras: "50 MP arrière / 5 MP avant",
       Batterie: "5260 mAh",
       Charge: "15 W",
       Système: "Android 15, MagicOS 9",
       Réseau: "4G, double SIM",
-      Couleur: "Vert",
+      Couleur: "Bleu cyan",
+      Couleurs: "Bleu cyan, Noir",
     },
   },
   "20000011": {
@@ -267,6 +308,7 @@ const catalog = {
     name: "Infinix Smart 20 4/128",
     categoryId: CAT.telephone,
     image: "infinix-smart-20.png",
+    images: ["infinix-smart-20.png", "infinix-smart-20-noir.webp"],
     description:
       "L'Infinix Smart 20 combine un grand écran 6,78 pouces à 120 Hz, un design ultra-fin de 7,7 mm et une batterie de 5200 mAh. Le MediaTek Helio G81 Ultimate, 4 Go de RAM (+4 Go virtuels) et 128 Go de stockage assurent une expérience fluide au quotidien. Certification IP64, NFC et XOS 16.",
     specs: {

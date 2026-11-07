@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 // Produits mis en avant dans le diaporama du hero.
 // L'ordre de ce tableau est l'ordre d'affichage.
 const SHOWCASE: { sku: string; label: string; image: string }[] = [
-  { sku: "20000010", label: "HONOR X5C 4/128", image: "/images/products/honor-x5c.png" },
+  { sku: "20000010", label: "HONOR X5c Plus 4/128", image: "/images/products/honor-x5c-plus-cyan-avant-arriere.webp" },
   { sku: "C-1793261256793", label: "HONOR X6C 6/256", image: "/images/products/honor-x6c.png" },
   { sku: "20000011", label: "Redmi 15C 6/128", image: "/images/products/redmi-15c.png" },
   { sku: "20000012", label: "Redmi A7 Pro 4/128", image: "/images/products/redmi-a7-pro.png" },

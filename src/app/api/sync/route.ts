@@ -54,6 +54,14 @@ const normName = (v: string) =>
     .replace(/\s+/g, " ")
     .trim();
 
+// La caisse conserve parfois une ancienne designation (ex. HONOR X5C alors
+// que le modele vendu est le X5c Plus). Ces noms sont forces cote site pour
+// ne pas etre ecrases a chaque synchronisation, sans toucher a la caisse.
+const NAME_OVERRIDES: Record<string, string> = {
+  "20000010": "HONOR X5c Plus 4/128",
+  "20000002": "Enceinte Bluetooth ROMIS RM-S213 LED",
+};
+
 async function uniqueCategorySlug(base: string) {
   let candidate = base.slice(0, 70) || "divers";
   let i = 2;
@@ -141,7 +149,8 @@ async function findProductByAppId(appId: unknown) {
 async function handleProduct(p: Ev) {
   const externalId = String(p.id);
   const sku = String(p.code || `C-${externalId}`).trim() || `C-${externalId}`;
-  const name = fixMojibake(p.name || "").trim() || sku;
+  const cleanName = fixMojibake(p.name || "").trim();
+  const name = NAME_OVERRIDES[sku] ?? (cleanName || sku);
 
   const [category, brand] = await Promise.all([
     resolveCategory(p.cat, p.sub),
