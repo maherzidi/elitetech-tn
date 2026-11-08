@@ -12,13 +12,19 @@ type Cat = {
   children: { id: string; name: string; nameAr: string | null; slug: string }[];
 };
 
-export default function MobileMenu({ categories }: { categories: Cat[] }) {
+export default function MobileMenu({
+  categories,
+  showPromotions = false,
+}: {
+  categories: Cat[];
+  showPromotions?: boolean;
+}) {
   const { locale, t } = useLanguage();
   const [open, setOpen] = useState(false);
   const [openCat, setOpenCat] = useState<string | null>(null);
 
   return (
-    <div className="lg:hidden">
+    <div className="md:hidden">
       <button
         aria-label="Menu"
         onClick={() => setOpen(true)}
@@ -73,11 +79,13 @@ export default function MobileMenu({ categories }: { categories: Cat[] }) {
                   )}
                 </li>
               ))}
-              <li className="border-b border-black/5 pb-1">
-                <Link href="/promotions" onClick={() => setOpen(false)} className="block rounded px-2 py-2 font-bold text-accent hover:bg-paper">
-                  Promotions
-                </Link>
-              </li>
+              {showPromotions && (
+                <li className="border-b border-black/5 pb-1">
+                  <Link href="/promotions" onClick={() => setOpen(false)} className="block rounded px-2 py-2 font-bold text-accent hover:bg-paper">
+                    Promotions
+                  </Link>
+                </li>
+              )}
               <li>
                 <Link href="/reparation" onClick={() => setOpen(false)} className="block rounded px-2 py-2 font-bold text-ink hover:bg-paper">
                   Réparation

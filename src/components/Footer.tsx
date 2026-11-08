@@ -1,9 +1,12 @@
 import Link from "next/link";
+import { hasActivePromotions } from "@/lib/promotions";
 
 const SHOP_PHONE = process.env.NEXT_PUBLIC_SHOP_PHONE || "+21652322608";
 const SHOP_WHATSAPP = process.env.NEXT_PUBLIC_SHOP_WHATSAPP || "21652322608";
 
-export default function Footer() {
+export default async function Footer() {
+  const showPromotions = await hasActivePromotions();
+
   return (
     <footer className="mt-16 bg-navy-950 text-white/80">
       <div className="container-page grid grid-cols-1 gap-8 border-b border-white/10 py-10 lg:grid-cols-2">
@@ -47,7 +50,9 @@ export default function Footer() {
           <div className="mb-3 text-sm font-semibold text-white">Navigation</div>
           <ul className="space-y-2 text-sm">
             <li><Link href="/" className="hover:text-white">Accueil</Link></li>
-            <li><Link href="/promotions" className="hover:text-white">Promotions</Link></li>
+            {showPromotions && (
+              <li><Link href="/promotions" className="hover:text-white">Promotions</Link></li>
+            )}
             <li><Link href="/reparation" className="hover:text-white">Réparation</Link></li>
             <li><Link href="/panier" className="hover:text-white">Panier</Link></li>
           </ul>

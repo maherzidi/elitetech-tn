@@ -3,6 +3,18 @@ export function formatPrice(value: number | string) {
   return `${n.toFixed(3)} DT`;
 }
 
+/**
+ * Affiche le prix, ou « Prix sur demande » quand il n'est pas encore fixe
+ * (batteries en arrivage dont la grille tarifaire est en attente).
+ */
+export function formatPriceOrAsk(value: number | string, locale: "fr" | "ar" = "fr") {
+  const n = typeof value === "string" ? parseFloat(value) : value;
+  if (!Number.isFinite(n) || n <= 0) {
+    return locale === "ar" ? "السعر عند الطلب" : "Prix sur demande";
+  }
+  return formatPrice(n);
+}
+
 export function generateOrderNumber() {
   const date = new Date();
   const y = date.getFullYear().toString().slice(-2);

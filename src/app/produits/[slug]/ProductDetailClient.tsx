@@ -5,7 +5,8 @@ import Link from "next/link";
 import { useState } from "react";
 import { useCart } from "@/components/CartProvider";
 import { useLanguage } from "@/components/LanguageProvider";
-import { formatPrice } from "@/lib/format";
+import { formatPrice, formatPriceOrAsk } from "@/lib/format";
+import { productStatus, statusLabel } from "@/lib/product-status";
 import { colorHex, productColors } from "@/lib/product-variants";
 import ProductCard, { ProductCardData } from "@/components/ProductCard";
 
@@ -43,7 +44,8 @@ export default function ProductDetailClient({
   const displayName = locale === "ar" && product.nameAr ? product.nameAr : product.name;
   const displayDesc = locale === "ar" && product.descriptionAr ? product.descriptionAr : product.description;
   const images = product.images.length > 0 ? product.images : ["/images/placeholder-product.svg"];
-  const inStock = product.stock > 0;
+  const status = productStatus(product.stock, product.specs);
+  const inStock = status === "in_stock";
 
   const colors = productColors(product.specs);
   // Un seul coloris : il est sélectionné d'office. Plusieurs coloris : le
@@ -158,15 +160,30 @@ export default function ProductDetailClient({
           <p className="mt-1 text-sm text-ink/40">SKU: {product.sku}</p>
 
           <div className="mt-4 flex items-baseline gap-3">
-            <span className="text-3xl font-extrabold text-navy-900">{formatPrice(product.price)}</span>
+            <span className="text-3xl font-extrabold text-navy-900">
+              {formatPriceOrAsk(product.price, locale)}
+            </span>
             {product.comparePrice && product.comparePrice > product.price && (
               <span className="text-lg text-ink/40 line-through">{formatPrice(product.comparePrice)}</span>
             )}
           </div>
 
-          <p className={`mt-2 text-sm font-medium ${inStock ? "text-green-600" : "text-red-500"}`}>
-            {inStock ? `${t("in_stock")} (${product.stock})` : t("out_of_stock")}
+          <p
+            className={`mt-2 text-sm font-medium ${
+              inStock ? "text-green-600" : status === "arriving" ? "text-amber-dark" : "text-red-500"
+            }`}
+          >
+            {inStock
+              ? `${statusLabel(status, locale)} (${product.stock})`
+              : statusLabel(status, locale)}
           </p>
+          {status === "arriving" && (
+            <p className="mt-1 text-sm text-ink/55">
+              {locale === "ar"
+                ? "متوفر قريباً — اتصل بنا للحجز."
+                : "Bientôt disponible — contactez-nous pour réserver."}
+            </p>
+          )}
 
           {displayDesc && <p className="mt-4 leading-relaxed text-ink/70">{displayDesc}</p>}
 

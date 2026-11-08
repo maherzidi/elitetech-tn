@@ -12,14 +12,20 @@ type Cat = {
   children: { id: string; name: string; nameAr: string | null; slug: string }[];
 };
 
-export default function CategoryNav({ categories }: { categories: Cat[] }) {
+export default function CategoryNav({
+  categories,
+  showPromotions = false,
+}: {
+  categories: Cat[];
+  showPromotions?: boolean;
+}) {
   const { locale } = useLanguage();
   const [openId, setOpenId] = useState<string | null>(null);
 
   return (
-    <nav className="hidden lg:block border-b border-black/5 bg-white">
+    <nav className="hidden md:block border-b border-black/5 bg-white">
       <div className="container-page">
-        <ul className="flex items-stretch whitespace-nowrap text-[13px] font-bold">
+        <ul className="flex flex-wrap items-stretch text-[13px] font-bold">
           {categories.map((cat, index) => (
             <li
               key={cat.id}
@@ -52,11 +58,13 @@ export default function CategoryNav({ categories }: { categories: Cat[] }) {
               )}
             </li>
           ))}
-          <li className="shrink-0">
-            <Link href="/promotions" className="flex h-10 items-center px-2 font-semibold text-accent hover:text-accent-dark">
-              Promotions
-            </Link>
-          </li>
+          {showPromotions && (
+            <li className="shrink-0">
+              <Link href="/promotions" className="flex h-10 items-center px-2 font-semibold text-accent hover:text-accent-dark">
+                Promotions
+              </Link>
+            </li>
+          )}
           <li className="shrink-0">
             <Link href="/reparation" className="flex h-10 items-center px-2 text-ink hover:text-accent">
               Réparation

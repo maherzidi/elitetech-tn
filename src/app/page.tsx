@@ -39,12 +39,13 @@ export default async function HomePage() {
     stock: p.stock,
     images: p.images,
     colors: productColors(p.specs),
+    specs: p.specs as Record<string, unknown> | null,
   }));
 
   const bySku = new Map(showcaseProducts.map((p) => [p.sku, p]));
   const showcase = SHOWCASE.flatMap(({ sku, label, image }) => {
     const product = bySku.get(sku);
-    if (!product) return [];
+    if (!product || product.stock <= 0) return [];
     return [
       {
         id: product.id,

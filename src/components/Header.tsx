@@ -6,12 +6,13 @@ import LanguageSwitcher from "./LanguageSwitcher";
 import SearchBar from "./SearchBar";
 import CategoryNav from "./CategoryNav";
 import MobileMenu from "./MobileMenu";
+import { hasActivePromotions } from "@/lib/promotions";
 
 const SHOP_PHONE = process.env.NEXT_PUBLIC_SHOP_PHONE || "+21652322608";
 const SHOP_WHATSAPP = process.env.NEXT_PUBLIC_SHOP_WHATSAPP || "21652322608";
 
 export default async function Header() {
-  const [categories, activeCounts] = await Promise.all([
+  const [categories, activeCounts, showPromotions] = await Promise.all([
     prisma.category.findMany({
       where: { parentId: null, isActive: true },
       orderBy: { order: "asc" },
@@ -28,19 +29,17 @@ export default async function Header() {
       where: { isActive: true },
       _count: { _all: true },
     }),
+    hasActivePromotions(),
   ]);
 
   const countByCategory = new Map(
     activeCounts.map((row) => [row.categoryId, row._count._all]),
   );
 
-  // On n'encombre pas le menu avec les rayons vides : seules les categories
-  // qui contiennent des produits en stock sont proposees.
+  // On garde les rayons vides hors du menu, mais on affiche toutes les
+  // sous-categories d'un rayon actif pour rendre la structure visible.
   const navCategories = categories
-    .map((category) => ({
-      ...category,
-      children: category.children.filter((child) => countByCategory.get(child.id)),
-    }))
+    .map((category) => ({ ...category }))
     .filter(
       (category) =>
         category.slug !== "divers" &&
@@ -72,7 +71,7 @@ export default async function Header() {
       {/* Bandeau principal */}
       <div className="bg-navy-900">
         <div className="container-page flex h-16 items-center gap-4">
-          <MobileMenu categories={navCategories as any} />
+          <MobileMenu categories={navCategories as any} showPromotions={showPromotions} />
 
           <Link href="/" className="flex items-center gap-2 shrink-0">
             <Image
@@ -99,7 +98,7 @@ export default async function Header() {
         </div>
       </div>
 
-      <CategoryNav categories={navCategories as any} />
+      <CategoryNav categories={navCategories as any} showPromotions={showPromotions} />
     </header>
   );
 }

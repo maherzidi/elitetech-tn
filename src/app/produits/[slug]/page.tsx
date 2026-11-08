@@ -54,6 +54,7 @@ export default async function ProductPage({ params }: { params: { slug: string }
         stock: r.stock,
         images: r.images,
         colors: productColors(r.specs),
+        specs: r.specs as Record<string, unknown> | null,
       }))}
     />
   );
