@@ -38,6 +38,11 @@ export default function CategoryNav({
                 className="flex h-10 items-center px-2 text-ink hover:text-accent"
               >
                 {locale === "ar" && cat.nameAr ? cat.nameAr : cat.name}
+                {cat.children.length > 0 && (
+                  <span className="ml-1 text-[10px] text-ink/40" aria-hidden="true">
+                    ▾
+                  </span>
+                )}
               </Link>
               {openId === cat.id && cat.children.length > 0 && (
                 <div
