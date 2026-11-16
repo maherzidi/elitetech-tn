@@ -5,14 +5,15 @@ import { useState } from "react";
 import { useCart, cartItemKey } from "@/components/CartProvider";
 import { useLanguage } from "@/components/LanguageProvider";
 import { formatPrice } from "@/lib/format";
-
-const SHIPPING_COST = 7;
+import { SHIPPING_COST, STORE_ADDRESS, type DeliveryMethod } from "@/lib/delivery";
 
 export default function CheckoutPage() {
   const { items, subtotal, clearCart } = useCart();
   const { t, locale } = useLanguage();
   const router = useRouter();
   const colorLabel = locale === "ar" ? "اللون" : "Couleur";
+  const [deliveryMethod, setDeliveryMethod] = useState<DeliveryMethod>("DELIVERY");
+  const shippingCost = deliveryMethod === "PICKUP" ? 0 : SHIPPING_COST;
 
   const [form, setForm] = useState({
     name: "",
@@ -43,6 +44,7 @@ export default function CheckoutPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          deliveryMethod,
           customer: {
             name: form.name,
             phone: form.phone,
@@ -85,8 +87,51 @@ export default function CheckoutPage() {
             <Field label={t("phone")} required type="tel" value={form.phone} onChange={(v) => setForm({ ...form, phone: v })} />
           </div>
           <Field label={t("email")} type="email" value={form.email} onChange={(v) => setForm({ ...form, email: v })} />
-          <Field label={t("address")} required value={form.address} onChange={(v) => setForm({ ...form, address: v })} />
-          <Field label={t("city")} required value={form.city} onChange={(v) => setForm({ ...form, city: v })} />
+
+          <div>
+            <h2 className="mb-2 font-semibold text-ink">{t("delivery_method")}</h2>
+            <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+              <label
+                className={`flex cursor-pointer items-center gap-2 rounded-md border p-3 text-sm ${
+                  deliveryMethod === "DELIVERY" ? "border-accent bg-accent/5" : "border-black/10"
+                }`}
+              >
+                <input
+                  type="radio"
+                  name="deliveryMethod"
+                  checked={deliveryMethod === "DELIVERY"}
+                  onChange={() => setDeliveryMethod("DELIVERY")}
+                />
+                {t("home_delivery")}
+              </label>
+              <label
+                className={`flex cursor-pointer items-center gap-2 rounded-md border p-3 text-sm ${
+                  deliveryMethod === "PICKUP" ? "border-accent bg-accent/5" : "border-black/10"
+                }`}
+              >
+                <input
+                  type="radio"
+                  name="deliveryMethod"
+                  checked={deliveryMethod === "PICKUP"}
+                  onChange={() => setDeliveryMethod("PICKUP")}
+                />
+                {t("store_pickup")}
+              </label>
+            </div>
+          </div>
+
+          {deliveryMethod === "DELIVERY" ? (
+            <>
+              <Field label={t("address")} required value={form.address} onChange={(v) => setForm({ ...form, address: v })} />
+              <Field label={t("city")} required value={form.city} onChange={(v) => setForm({ ...form, city: v })} />
+            </>
+          ) : (
+            <div className="rounded-md border border-accent/30 bg-accent/5 p-3 text-sm">
+              <p className="font-medium text-ink">{t("store_pickup")}</p>
+              <p className="mt-1 text-ink/70">{STORE_ADDRESS}</p>
+              <p className="mt-1 text-xs text-ink/50">{t("store_pickup_note")}</p>
+            </div>
+          )}
 
           <div>
             <label className="mb-1 block text-sm font-medium text-ink">{t("order_notes")}</label>
@@ -157,12 +202,14 @@ export default function CheckoutPage() {
               <span className="font-medium">{formatPrice(subtotal)}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-ink/60">{t("shipping")}</span>
-              <span className="font-medium">{formatPrice(SHIPPING_COST)}</span>
+              <span className="text-ink/60">{deliveryMethod === "PICKUP" ? t("store_pickup") : t("shipping")}</span>
+              <span className="font-medium">
+                {deliveryMethod === "PICKUP" ? "Gratuit" : formatPrice(SHIPPING_COST)}
+              </span>
             </div>
             <div className="flex justify-between border-t border-black/5 pt-2 text-base font-bold text-navy-900">
               <span>{t("total")}</span>
-              <span>{formatPrice(subtotal + SHIPPING_COST)}</span>
+              <span>{formatPrice(subtotal + shippingCost)}</span>
             </div>
           </div>
         </div>

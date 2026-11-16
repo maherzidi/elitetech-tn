@@ -3,16 +3,22 @@ import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { generateOrderNumber } from "@/lib/format";
 import { resolveProductColor } from "@/lib/product-variants";
-
-const SHIPPING_COST = 7;
+import {
+  PICKUP_ADDRESS,
+  PICKUP_LABEL,
+  SHIPPING_COST,
+  STORE_ADDRESS,
+  STORE_CITY,
+} from "@/lib/delivery";
 
 const OrderSchema = z.object({
+  deliveryMethod: z.enum(["DELIVERY", "PICKUP"]).default("DELIVERY"),
   customer: z.object({
     name: z.string().min(2),
     phone: z.string().min(6),
     email: z.string().email().optional().or(z.literal("")),
-    address: z.string().min(3),
-    city: z.string().min(2),
+    address: z.string().optional(),
+    city: z.string().optional(),
     notes: z.string().optional(),
   }),
   sellerCode: z.string().optional(),
@@ -30,6 +36,23 @@ const OrderSchema = z.object({
 export async function POST(req: NextRequest) {
   try {
     const body = OrderSchema.parse(await req.json());
+
+    const isPickup = body.deliveryMethod === "PICKUP";
+    const address = isPickup ? PICKUP_ADDRESS : (body.customer.address ?? "").trim();
+    const city = isPickup ? STORE_CITY : (body.customer.city ?? "").trim();
+
+    if (!isPickup && (address.length < 3 || city.length < 2)) {
+      return NextResponse.json(
+        { error: "Merci d'indiquer votre adresse et votre ville pour la livraison." },
+        { status: 400 }
+      );
+    }
+
+    const customerNotes = (body.customer.notes ?? "").trim();
+    const notes = isPickup
+      ? [customerNotes, `${PICKUP_LABEL} — ${STORE_ADDRESS}`].filter(Boolean).join("\n")
+      : customerNotes || null;
+    const shippingCost = isPickup ? 0 : SHIPPING_COST;
 
     const productIds = [...new Set(body.items.map((i) => i.productId))];
     const products = await prisma.product.findMany({ where: { id: { in: productIds } } });
@@ -93,8 +116,8 @@ export async function POST(req: NextRequest) {
           name: body.customer.name,
           phone: body.customer.phone,
           email: body.customer.email || null,
-          address: body.customer.address,
-          city: body.customer.city,
+          address,
+          city,
         },
       });
 
@@ -105,12 +128,12 @@ export async function POST(req: NextRequest) {
           customerName: body.customer.name,
           customerPhone: body.customer.phone,
           customerEmail: body.customer.email || null,
-          address: body.customer.address,
-          city: body.customer.city,
-          notes: body.customer.notes || null,
+          address,
+          city,
+          notes,
           subtotal,
-          shippingCost: SHIPPING_COST,
-          total: subtotal + SHIPPING_COST,
+          shippingCost,
+          total: subtotal + shippingCost,
           sellerId: seller?.id || null,
           sellerCode: seller?.code || null,
           items: {

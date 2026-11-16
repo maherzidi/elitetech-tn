@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { formatPrice } from "@/lib/format";
+import { isPickupOrder } from "@/lib/delivery";
 
 export const dynamic = "force-dynamic";
 
@@ -52,7 +53,14 @@ export default async function AdminOrdersPage() {
                   {o.customerName}
                   <div className="text-xs text-ink/40">{o.customerPhone}</div>
                 </td>
-                <td className="p-3 text-ink/60">{o.city}</td>
+                <td className="p-3 text-ink/60">
+                  {o.city}
+                  {isPickupOrder(o) && (
+                    <span className="ml-2 rounded-full bg-accent/10 px-2 py-0.5 text-xs font-medium text-accent">
+                      Retrait
+                    </span>
+                  )}
+                </td>
                 <td className="p-3 font-medium">{formatPrice(Number(o.total))}</td>
                 <td className="p-3">
                   <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${STATUS_COLORS[o.status]}`}>

@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { formatPrice } from "@/lib/format";
+import { isPickupOrder, STORE_ADDRESS } from "@/lib/delivery";
 import { updateOrderStatus } from "../../actions";
 
 export const dynamic = "force-dynamic";
@@ -17,6 +18,7 @@ export default async function AdminOrderDetailPage({ params }: { params: { id: s
   if (!order) notFound();
 
   const boundUpdate = updateOrderStatus.bind(null, order.id);
+  const pickup = isPickupOrder(order);
 
   return (
     <div>
@@ -54,8 +56,10 @@ export default async function AdminOrderDetailPage({ params }: { params: { id: s
               <span>{formatPrice(Number(order.subtotal))}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-ink/60">Livraison</span>
-              <span>{formatPrice(Number(order.shippingCost))}</span>
+              <span className="text-ink/60">{pickup ? "Retrait en magasin" : "Livraison"}</span>
+              <span>
+                {Number(order.shippingCost) === 0 ? "Gratuit" : formatPrice(Number(order.shippingCost))}
+              </span>
             </div>
             <div className="flex justify-between border-t border-black/5 pt-1 font-bold text-navy-900">
               <span>Total</span>
@@ -77,9 +81,14 @@ export default async function AdminOrderDetailPage({ params }: { params: { id: s
             <p className="text-sm text-ink">{order.customerName}</p>
             <p className="text-sm text-ink/60">{order.customerPhone}</p>
             {order.customerEmail && <p className="text-sm text-ink/60">{order.customerEmail}</p>}
-            <p className="mt-2 text-sm text-ink/60">
-              {order.address}, {order.city}
-            </p>
+            <div className="mt-2 rounded-md bg-paper p-2 text-sm">
+              <span className="font-medium text-ink">
+                {pickup ? "Retrait en magasin" : "Livraison à domicile"}
+              </span>
+              <p className="text-ink/60">
+                {pickup ? STORE_ADDRESS : `${order.address}, ${order.city}`}
+              </p>
+            </div>
           </div>
 
           <div className="card p-5">
