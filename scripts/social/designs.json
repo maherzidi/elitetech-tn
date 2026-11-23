@@ -1,6 +1,8 @@
-[
+﻿[
   {
     "id": "galaxy-a07",
+    "locale": "fr",
+    "theme": "dark",
     "badge": "NOUVEAUTÉ",
     "title": "Samsung Galaxy A07",
     "subtitle": "Le smartphone essentiel, signé Samsung",
@@ -15,11 +17,56 @@
     "ghost": "A07",
     "website": "elitetech.tn",
     "phone": "☎ 52 322 608",
-    "address": "Avenue Taieb Azabi, Hammamet",
+    "address": "Avenue Taieb Azabi, 8050 Hammamet",
     "lines": ["3 coloris disponibles", "Retrait magasin • Livraison en Tunisie"]
   },
   {
+    "id": "galaxy-a07",
+    "locale": "fr",
+    "theme": "light",
+    "badge": "NOUVEAUTÉ",
+    "title": "Samsung Galaxy A07",
+    "subtitle": "Le smartphone essentiel, signé Samsung",
+    "price": 579,
+    "priceLabel": "PRIX MAGASIN",
+    "chips": ["4 Go + 128 Go", "Écran 90 Hz", "Caméra 50 MP", "5000 mAh"],
+    "images": [
+      "/images/products/galaxy-a07-noir.webp",
+      "/images/products/galaxy-a07-vert.webp",
+      "/images/products/galaxy-a07-violet.webp"
+    ],
+    "ghost": "A07",
+    "website": "elitetech.tn",
+    "phone": "☎ 52 322 608",
+    "address": "Avenue Taieb Azabi, 8050 Hammamet",
+    "lines": ["3 coloris disponibles", "Retrait magasin • Livraison en Tunisie"]
+  },
+  {
+    "id": "galaxy-a07",
+    "locale": "ar",
+    "theme": "light",
+    "badge": "جديد",
+    "title": "سامسونج جالاكسي\nA07",
+    "subtitle": "الهاتف الذي تحتاجه، بسعر مناسب",
+    "price": 579,
+    "priceLabel": "سعر المتجر",
+    "currency": "د.ت",
+    "chips": ["4 + 128 غيغا", "شاشة 90 هرتز", "كاميرا 50 ميغا", "بطارية 5000"],
+    "images": [
+      "/images/products/galaxy-a07-noir.webp",
+      "/images/products/galaxy-a07-vert.webp",
+      "/images/products/galaxy-a07-violet.webp"
+    ],
+    "ghost": "A07",
+    "website": "elitetech.tn",
+    "phone": "☎ 52 322 608",
+    "address": "شارع الطيب العزابي، حمامات",
+    "lines": ["3 ألوان متوفرة", "استلام من المتجر • توصيل في تونس"]
+  },
+  {
     "id": "honor-x5c-plus",
+    "locale": "fr",
+    "theme": "dark",
     "badge": "LE BON PLAN",
     "title": "HONOR X5c Plus",
     "subtitle": "Grand écran, grande autonomie, petit prix",
@@ -30,11 +77,48 @@
     "ghost": "X5c",
     "website": "elitetech.tn",
     "phone": "☎ 52 322 608",
-    "address": "Avenue Taieb Azabi, Hammamet",
+    "address": "Avenue Taieb Azabi, 8050 Hammamet",
     "lines": ["Disponible en magasin", "Retrait magasin • Livraison en Tunisie"]
   },
   {
+    "id": "honor-x5c-plus",
+    "locale": "fr",
+    "theme": "light",
+    "badge": "LE BON PLAN",
+    "title": "HONOR X5c Plus",
+    "subtitle": "Grand écran, grande autonomie, petit prix",
+    "price": 479,
+    "priceLabel": "PRIX MAGASIN",
+    "chips": ["4 Go + 128 Go", "Caméra 50 MP", "5000 mAh", "Double SIM"],
+    "images": ["/images/products/honor-x5c-plus-cyan-avant-arriere.webp"],
+    "ghost": "X5c",
+    "website": "elitetech.tn",
+    "phone": "☎ 52 322 608",
+    "address": "Avenue Taieb Azabi, 8050 Hammamet",
+    "lines": ["Disponible en magasin", "Retrait magasin • Livraison en Tunisie"]
+  },
+  {
+    "id": "honor-x5c-plus",
+    "locale": "ar",
+    "theme": "light",
+    "badge": "أفضل سعر",
+    "title": "هونر X5c بلس",
+    "subtitle": "شاشة كبيرة، بطارية كبيرة، سعر صغير",
+    "price": 479,
+    "priceLabel": "سعر المتجر",
+    "currency": "د.ت",
+    "chips": ["4 + 128 غيغا", "كاميرا 50 ميغا", "بطارية 5000", "شريحتان"],
+    "images": ["/images/products/honor-x5c-plus-cyan-avant-arriere.webp"],
+    "ghost": "X5c",
+    "website": "elitetech.tn",
+    "phone": "☎ 52 322 608",
+    "address": "شارع الطيب العزابي، حمامات",
+    "lines": ["متوفر في المتجر", "استلام من المتجر • توصيل في تونس"]
+  },
+  {
     "id": "batteries",
+    "locale": "fr",
+    "theme": "dark",
     "badge": "EN ARRIVAGE",
     "title": "Batteries iPhone, Samsung & Xiaomi",
     "subtitle": "La référence exacte pour votre téléphone",
@@ -47,7 +131,45 @@
     "ghost": "50+",
     "website": "elitetech.tn",
     "phone": "☎ 52 322 608",
-    "address": "Avenue Taieb Azabi, Hammamet",
+    "address": "Avenue Taieb Azabi, 8050 Hammamet",
     "lines": ["Plus de 50 références", "Envoyez-nous votre modèle"]
+  },
+  {
+    "id": "batteries",
+    "locale": "fr",
+    "theme": "light",
+    "badge": "EN ARRIVAGE",
+    "title": "Batteries iPhone, Samsung & Xiaomi",
+    "subtitle": "La référence exacte pour votre téléphone",
+    "priceText": "Prix sur demande",
+    "chips": ["iPhone", "Samsung", "Xiaomi", "Huawei"],
+    "images": [
+      "/images/products/batteries/batterie-iphone-13.webp",
+      "/images/products/batteries/batterie-galaxy-s21.webp"
+    ],
+    "ghost": "50+",
+    "website": "elitetech.tn",
+    "phone": "☎ 52 322 608",
+    "address": "Avenue Taieb Azabi, 8050 Hammamet",
+    "lines": ["Plus de 50 références", "Envoyez-nous votre modèle"]
+  },
+  {
+    "id": "batteries",
+    "locale": "ar",
+    "theme": "light",
+    "badge": "قريباً",
+    "title": "بطاريات آيفون\nوسامسونج وشاومي",
+    "subtitle": "المرجع الصحيح لهاتفك",
+    "priceText": "السعر عند الطلب",
+    "chips": ["آيفون", "سامسونج", "شاومي", "هواوي"],
+    "images": [
+      "/images/products/batteries/batterie-iphone-13.webp",
+      "/images/products/batteries/batterie-galaxy-s21.webp"
+    ],
+    "ghost": "50+",
+    "website": "elitetech.tn",
+    "phone": "☎ 52 322 608",
+    "address": "شارع الطيب العزابي، حمامات",
+    "lines": ["أكثر من 50 مرجع", "أرسل لنا نوع هاتفك"]
   }
 ]
