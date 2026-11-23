@@ -23,7 +23,7 @@ const config: Config = {
           dark: "#E69A0D",
         },
         ink: "#15130F",
-        paper: "#F7F6F4",
+        paper: "#FFFFFF",
       },
       fontFamily: {
         sora: ["var(--font-sora)", "sans-serif"],

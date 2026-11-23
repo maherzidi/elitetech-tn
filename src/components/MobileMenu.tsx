@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
 import { useState } from "react";
@@ -50,18 +50,18 @@ export default function MobileMenu({
               {categories.map((cat) => (
                 <li key={cat.id} className="border-b border-black/5 pb-1">
                   <button
-                    className="flex w-full items-center justify-between rounded px-2 py-2 text-left font-bold text-ink hover:bg-paper"
+                    className="flex w-full items-center justify-between rounded px-2 py-2 text-left font-bold text-ink hover:bg-black/5"
                     onClick={() => setOpenCat(openCat === cat.id ? null : cat.id)}
                   >
                     {locale === "ar" && cat.nameAr ? cat.nameAr : cat.name}
-                    <span>{openCat === cat.id ? "−" : "+"}</span>
+                    <span>{openCat === cat.id ? "âˆ’" : "+"}</span>
                   </button>
                   {openCat === cat.id && (
                     <div className="ml-3 flex flex-col">
                       <Link
                         href={`/categories/${cat.slug}`}
                         onClick={() => setOpen(false)}
-                        className="rounded px-2 py-1.5 text-accent hover:bg-paper"
+                        className="rounded px-2 py-1.5 text-accent hover:bg-black/5"
                       >
                         {t("all_categories")}
                       </Link>
@@ -70,7 +70,7 @@ export default function MobileMenu({
                           key={sub.id}
                           href={`/categories/${cat.slug}/${sub.slug}`}
                           onClick={() => setOpen(false)}
-                          className="rounded px-2 py-1.5 text-ink/80 hover:bg-paper"
+                          className="rounded px-2 py-1.5 text-ink/80 hover:bg-black/5"
                         >
                           {locale === "ar" && sub.nameAr ? sub.nameAr : sub.name}
                         </Link>
@@ -81,14 +81,14 @@ export default function MobileMenu({
               ))}
               {showPromotions && (
                 <li className="border-b border-black/5 pb-1">
-                  <Link href="/promotions" onClick={() => setOpen(false)} className="block rounded px-2 py-2 font-bold text-accent hover:bg-paper">
+                  <Link href="/promotions" onClick={() => setOpen(false)} className="block rounded px-2 py-2 font-bold text-accent hover:bg-black/5">
                     Promotions
                   </Link>
                 </li>
               )}
               <li>
-                <Link href="/reparation" onClick={() => setOpen(false)} className="block rounded px-2 py-2 font-bold text-ink hover:bg-paper">
-                  Réparation
+                <Link href="/reparation" onClick={() => setOpen(false)} className="block rounded px-2 py-2 font-bold text-ink hover:bg-black/5">
+                  RÃ©paration
                 </Link>
               </li>
             </ul>

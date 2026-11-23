@@ -13,7 +13,12 @@
     "db:push": "prisma db push",
     "db:migrate": "prisma migrate dev",
     "db:seed": "tsx prisma/seed.ts",
-    "db:studio": "prisma studio"
+    "db:studio": "prisma studio",
+    "fb:check": "node scripts/check-facebook.cjs",
+    "fb:token": "node scripts/set-facebook-token.cjs",
+    "fb:dry": "node scripts/publish-facebook.cjs",
+    "fb:publish": "node scripts/publish-facebook.cjs --publish",
+    "social:render": "node scripts/social/render-designs.cjs"
   },
   "dependencies": {
     "@prisma/client": "^5.20.0",
@@ -25,6 +30,7 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
+    "@napi-rs/canvas": "^1.2.0",
     "@types/bcryptjs": "^2.4.6",
     "@types/node": "^20.14.0",
     "@types/react": "^18.3.1",

@@ -56,7 +56,7 @@ export default function HeroShowcase({ items }: { items: ShowcaseItem[] }) {
         touchX.current = null;
       }}
     >
-      <div className="relative overflow-hidden rounded-2xl border border-black/5 bg-[linear-gradient(115deg,#F1EDFF_0%,#FAF8FF_42%,#FFF3E8_100%)] shadow-sm">
+      <div className="relative overflow-hidden rounded-2xl border border-black/5 bg-[linear-gradient(115deg,#FFFFFF_0%,#FAFAFB_55%,#FFF6EE_100%)] shadow-sm">
         <Link
           href={`/produits/${item.slug}`}
           className="grid grid-cols-1 md:grid-cols-[minmax(0,46%)_minmax(0,1fr)]"

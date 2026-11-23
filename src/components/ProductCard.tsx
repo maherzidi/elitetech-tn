@@ -38,7 +38,7 @@ export default function ProductCard({ product }: { product: ProductCardData }) {
 
   return (
     <div className="card group flex flex-col overflow-hidden transition-shadow hover:shadow-md">
-      <Link href={`/produits/${product.slug}`} className="relative block aspect-square bg-[radial-gradient(circle_at_50%_40%,#ffffff,#e9e9e5)]">
+      <Link href={`/produits/${product.slug}`} className="relative block aspect-square bg-[radial-gradient(circle_at_50%_40%,#ffffff,#f5f6f8)]">
         <Image src={image} alt={displayName} fill className="object-contain p-4 drop-shadow-[0_10px_16px_rgba(15,23,42,0.12)] transition-transform group-hover:scale-105" />
         {product.comparePrice && product.comparePrice > product.price && (
           <span className="absolute left-2 top-2 rounded bg-amber px-2 py-0.5 text-xs font-bold text-navy-950">
@@ -51,7 +51,7 @@ export default function ProductCard({ product }: { product: ProductCardData }) {
           {displayName}
         </Link>
         <div className="flex items-baseline gap-2">
-          <span className="text-base font-bold text-navy-900">
+          <span className="text-base font-extrabold text-accent">
             {formatPriceOrAsk(product.price, locale)}
           </span>
           {product.comparePrice && product.comparePrice > product.price && (

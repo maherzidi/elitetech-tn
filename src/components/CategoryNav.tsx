@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
 import { useState } from "react";
@@ -40,7 +40,7 @@ export default function CategoryNav({
                 {locale === "ar" && cat.nameAr ? cat.nameAr : cat.name}
                 {cat.children.length > 0 && (
                   <span className="ml-1 text-[10px] text-ink/40" aria-hidden="true">
-                    ▾
+                    â–¾
                   </span>
                 )}
               </Link>
@@ -54,7 +54,7 @@ export default function CategoryNav({
                     <Link
                       key={sub.id}
                       href={`/categories/${cat.slug}/${sub.slug}`}
-                      className="rounded px-2 py-1.5 text-ink/80 hover:bg-paper hover:text-accent"
+                      className="rounded px-2 py-1.5 text-ink/80 hover:bg-black/5 hover:text-accent"
                     >
                       {locale === "ar" && sub.nameAr ? sub.nameAr : sub.name}
                     </Link>
@@ -72,7 +72,7 @@ export default function CategoryNav({
           )}
           <li className="shrink-0">
             <Link href="/reparation" className="flex h-10 items-center px-2 text-ink hover:text-accent">
-              Réparation
+              RÃ©paration
             </Link>
           </li>
         </ul>

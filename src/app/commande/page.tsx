@@ -192,7 +192,7 @@ export default function CheckoutPage() {
                   )}{" "}
                   × {i.quantity}
                 </span>
-                <span className="font-medium">{formatPrice(i.price * i.quantity)}</span>
+                <span className="font-extrabold text-accent">{formatPrice(i.price * i.quantity)}</span>
               </li>
             ))}
           </ul>
@@ -209,7 +209,7 @@ export default function CheckoutPage() {
             </div>
             <div className="flex justify-between border-t border-black/5 pt-2 text-base font-bold text-navy-900">
               <span>{t("total")}</span>
-              <span>{formatPrice(subtotal + shippingCost)}</span>
+              <span className="font-extrabold text-accent">{formatPrice(subtotal + shippingCost)}</span>
             </div>
           </div>
         </div>

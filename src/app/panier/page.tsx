@@ -45,7 +45,7 @@ export default function CartPage() {
                     {colorLabel} : <span className="font-medium text-ink/70">{item.color}</span>
                   </p>
                 )}
-                <p className="mt-1 text-sm font-bold text-navy-900">{formatPrice(item.price)}</p>
+                <p className="mt-1 text-sm font-extrabold text-accent">{formatPrice(item.price)}</p>
               </div>
               <div className="flex items-center rounded-md border border-black/10">
                 <button
@@ -88,7 +88,7 @@ export default function CartPage() {
             </div>
             <div className="flex justify-between border-t border-black/5 pt-2 text-base font-bold text-navy-900">
               <span>{t("total")}</span>
-              <span>{formatPrice(subtotal + SHIPPING_COST)}</span>
+              <span className="font-extrabold text-accent">{formatPrice(subtotal + SHIPPING_COST)}</span>
             </div>
           </div>
           <Link href="/commande" className="btn-primary mt-5 w-full">

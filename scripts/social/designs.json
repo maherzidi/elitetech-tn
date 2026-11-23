@@ -1,0 +1,53 @@
+[
+  {
+    "id": "galaxy-a07",
+    "badge": "NOUVEAUTÉ",
+    "title": "Samsung Galaxy A07",
+    "subtitle": "Le smartphone essentiel, signé Samsung",
+    "price": 579,
+    "priceLabel": "PRIX MAGASIN",
+    "chips": ["4 Go + 128 Go", "Écran 90 Hz", "Caméra 50 MP", "5000 mAh"],
+    "images": [
+      "/images/products/galaxy-a07-noir.webp",
+      "/images/products/galaxy-a07-vert.webp",
+      "/images/products/galaxy-a07-violet.webp"
+    ],
+    "ghost": "A07",
+    "website": "elitetech.tn",
+    "phone": "☎ 52 322 608",
+    "address": "Avenue Taieb Azabi, Hammamet",
+    "lines": ["3 coloris disponibles", "Retrait magasin • Livraison en Tunisie"]
+  },
+  {
+    "id": "honor-x5c-plus",
+    "badge": "LE BON PLAN",
+    "title": "HONOR X5c Plus",
+    "subtitle": "Grand écran, grande autonomie, petit prix",
+    "price": 479,
+    "priceLabel": "PRIX MAGASIN",
+    "chips": ["4 Go + 128 Go", "Caméra 50 MP", "5000 mAh", "Double SIM"],
+    "images": ["/images/products/honor-x5c-plus-cyan-avant-arriere.webp"],
+    "ghost": "X5c",
+    "website": "elitetech.tn",
+    "phone": "☎ 52 322 608",
+    "address": "Avenue Taieb Azabi, Hammamet",
+    "lines": ["Disponible en magasin", "Retrait magasin • Livraison en Tunisie"]
+  },
+  {
+    "id": "batteries",
+    "badge": "EN ARRIVAGE",
+    "title": "Batteries iPhone, Samsung & Xiaomi",
+    "subtitle": "La référence exacte pour votre téléphone",
+    "priceText": "Prix sur demande",
+    "chips": ["iPhone", "Samsung", "Xiaomi", "Huawei"],
+    "images": [
+      "/images/products/batteries/batterie-iphone-13.webp",
+      "/images/products/batteries/batterie-galaxy-s21.webp"
+    ],
+    "ghost": "50+",
+    "website": "elitetech.tn",
+    "phone": "☎ 52 322 608",
+    "address": "Avenue Taieb Azabi, Hammamet",
+    "lines": ["Plus de 50 références", "Envoyez-nous votre modèle"]
+  }
+]

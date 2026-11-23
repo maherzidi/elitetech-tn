@@ -133,7 +133,7 @@ export default function ProductDetailClient({
       <div className="grid grid-cols-1 gap-10 lg:grid-cols-2">
         {/* Gallery */}
         <div>
-          <div className="relative mb-3 aspect-square overflow-hidden rounded-lg border border-black/5 bg-[radial-gradient(circle_at_50%_40%,#ffffff,#e9e9e5)]">
+          <div className="relative mb-3 aspect-square overflow-hidden rounded-lg border border-black/5 bg-[radial-gradient(circle_at_50%_40%,#ffffff,#f5f6f8)]">
             <Image src={images[activeImage]} alt={displayName} fill className="object-contain p-8 drop-shadow-[0_16px_28px_rgba(15,23,42,0.14)]" />
           </div>
           {images.length > 1 && (
@@ -160,7 +160,7 @@ export default function ProductDetailClient({
           <p className="mt-1 text-sm text-ink/40">SKU: {product.sku}</p>
 
           <div className="mt-4 flex items-baseline gap-3">
-            <span className="text-3xl font-extrabold text-navy-900">
+            <span className="text-3xl font-extrabold text-accent">
               {formatPriceOrAsk(product.price, locale)}
             </span>
             {product.comparePrice && product.comparePrice > product.price && (
@@ -173,9 +173,7 @@ export default function ProductDetailClient({
               inStock ? "text-green-600" : status === "arriving" ? "text-amber-dark" : "text-red-500"
             }`}
           >
-            {inStock
-              ? `${statusLabel(status, locale)} (${product.stock})`
-              : statusLabel(status, locale)}
+            {statusLabel(status, locale)}
           </p>
           {status === "arriving" && (
             <p className="mt-1 text-sm text-ink/55">

@@ -46,7 +46,7 @@ export default async function OrderConfirmationPage({ params }: { params: { id: 
               <span className="text-ink/70">
                 {item.productName} × {item.quantity}
               </span>
-              <span className="font-medium">{formatPrice(Number(item.total))}</span>
+              <span className="font-extrabold text-accent">{formatPrice(Number(item.total))}</span>
             </li>
           ))}
         </ul>
@@ -57,7 +57,7 @@ export default async function OrderConfirmationPage({ params }: { params: { id: 
           </div>
           <div className="flex justify-between text-base font-bold text-navy-900">
             <span>Total</span>
-            <span>{formatPrice(Number(order.total))}</span>
+            <span className="font-extrabold text-accent">{formatPrice(Number(order.total))}</span>
           </div>
         </div>
       </div>
