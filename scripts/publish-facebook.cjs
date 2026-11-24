@@ -111,10 +111,13 @@ async function main() {
     console.error("Fichier introuvable : scripts/social/posts.json");
     process.exit(1);
   }
-  const posts = JSON.parse(fs.readFileSync(file, "utf8"));
-  console.log(`${posts.length} publication(s) | mode : ${PUBLISH ? "PUBLICATION" : "simulation"}`);
+  const posts = JSON.parse(fs.readFileSync(file, "utf8").replace(/^\uFEFF/, ""));
+  const onlyArg = process.argv.find((a) => a.startsWith("--only="));
+  const only = onlyArg ? Number(onlyArg.split("=")[1]) : 0;
+  const selection = only ? [posts[only - 1]].filter(Boolean) : posts;
+  console.log(`${selection.length} publication(s) | mode : ${PUBLISH ? "PUBLICATION" : "simulation"}`);
 
-  for (const [i, post] of posts.entries()) {
+  for (const [i, post] of selection.entries()) {
     const label = `#${i + 1} ${post.message.slice(0, 60)}...`;
     if (!PUBLISH) {
       const remplace = (post.deleteIds || []).length;

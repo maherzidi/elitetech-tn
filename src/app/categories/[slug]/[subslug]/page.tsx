@@ -3,7 +3,7 @@ import { prisma } from "@/lib/prisma";
 import ProductGrid from "@/components/ProductGrid";
 import { toCatalogProduct } from "@/lib/catalog";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 
 export default async function SubcategoryPage({ params }: { params: { slug: string; subslug: string } }) {
   const parent = await prisma.category.findUnique({ where: { slug: params.slug } });

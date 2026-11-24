@@ -3,7 +3,7 @@ import { prisma } from "@/lib/prisma";
 import ProductDetailClient from "./ProductDetailClient";
 import { productColors } from "@/lib/product-variants";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 
 export default async function ProductPage({ params }: { params: { slug: string } }) {
   const product = await prisma.product.findUnique({
