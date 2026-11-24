@@ -5,6 +5,15 @@ import { toCatalogProduct } from "@/lib/catalog";
 
 export const revalidate = 60;
 
+// Pré-génère les pages de catégories au build pour un affichage immédiat (cache CDN).
+export async function generateStaticParams() {
+  const categories = await prisma.category.findMany({
+    where: { isActive: true, parentId: null },
+    select: { slug: true },
+  });
+  return categories.map((c) => ({ slug: c.slug }));
+}
+
 export default async function CategoryPage({ params }: { params: { slug: string } }) {
   const category = await prisma.category.findUnique({
     where: { slug: params.slug },

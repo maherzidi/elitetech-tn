@@ -5,6 +5,17 @@ import { toCatalogProduct } from "@/lib/catalog";
 
 export const revalidate = 60;
 
+// Pré-génère les sous-catégories au build pour un affichage immédiat (cache CDN).
+export async function generateStaticParams() {
+  const parents = await prisma.category.findMany({
+    where: { isActive: true, parentId: null },
+    select: { slug: true, children: { where: { isActive: true }, select: { slug: true } } },
+  });
+  return parents.flatMap((parent) =>
+    parent.children.map((child) => ({ slug: parent.slug, subslug: child.slug }))
+  );
+}
+
 export default async function SubcategoryPage({ params }: { params: { slug: string; subslug: string } }) {
   const parent = await prisma.category.findUnique({ where: { slug: params.slug } });
   const sub = await prisma.category.findUnique({ where: { slug: params.subslug } });

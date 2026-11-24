@@ -5,6 +5,15 @@ import { productColors } from "@/lib/product-variants";
 
 export const revalidate = 60;
 
+// Pré-génère les fiches produits au build pour un affichage immédiat (cache CDN).
+export async function generateStaticParams() {
+  const products = await prisma.product.findMany({
+    where: { isActive: true },
+    select: { slug: true },
+  });
+  return products.map((p) => ({ slug: p.slug }));
+}
+
 export default async function ProductPage({ params }: { params: { slug: string } }) {
   const product = await prisma.product.findUnique({
     where: { slug: params.slug },
